@@ -2,11 +2,14 @@
 //  SavedLayoutsView.swift
 //  AuraSpatial
 //
-//  Screen 7 (SRS Section 5): recall, overwrite, delete (FR-4.2). Overwrite
-//  calls through SavedLayoutsController.overwrite(_:with:), which persists
-//  via the repository and then refresh()es from it - so, unlike the Figma
-//  prototype bug logged in the SRS's Appendix B, the updated timestamp here
-//  is guaranteed to survive navigating away and back.
+//  Screen 7 (SRS Section 5): recall, overwrite, delete (FR-4.2). Rebuilt
+//  with an OrbitGlyph thumbnail per row and the teal/red rounded-square
+//  icon buttons the prototype uses, replacing the plain system List row.
+//
+//  Overwrite calls through SavedLayoutsController.overwrite(_:with:), which
+//  persists via the repository and then refresh()es from it - so, unlike
+//  the Figma prototype bug logged in the SRS's Appendix B, the updated
+//  timestamp here is guaranteed to survive navigating away and back.
 //
 
 import SwiftUI
@@ -24,23 +27,27 @@ struct SavedLayoutsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(savedLayoutsController.savedLayouts) { layout in
-                    Button {
-                        canvasController.loadLayout(layout)
-                    } label: {
-                        row(for: layout)
+            ZStack {
+                Color.auraBackground.ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 14) {
+                        ForEach(savedLayoutsController.savedLayouts) { layout in
+                            row(for: layout)
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .padding(20)
                 }
             }
             .navigationTitle("Saved Layouts")
+            .toolbarBackground(Color.auraBackground, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
                         showingProfile = true
                     } label: {
                         Image(systemName: "person.crop.circle")
+                            .foregroundStyle(.white)
                     }
                 }
             }
@@ -53,43 +60,39 @@ struct SavedLayoutsView: View {
         }
     }
 
-    @ViewBuilder
     private func row(for layout: Soundscape) -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(layout.name)
-                    .font(.headline)
-                Text(relativeFormatter.localizedString(for: layout.updatedAt, relativeTo: Date()))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
+        Button {
+            canvasController.loadLayout(layout)
+        } label: {
+            HStack(spacing: 14) {
+                OrbitGlyph(size: 48)
 
-            Spacer()
-
-            Text("\(layout.nodes.count) nodes")
-                .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.purple.opacity(0.2), in: Capsule())
-
-            Button {
-                Task {
-                    await savedLayoutsController.overwrite(layout, with: canvasController.nodes)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(layout.name)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                    Text(relativeFormatter.localizedString(for: layout.updatedAt, relativeTo: Date()))
+                        .font(.caption)
+                        .foregroundStyle(.auraTextSecondary)
                 }
-            } label: {
-                Image(systemName: "arrow.triangle.2.circlepath")
-            }
-            .buttonStyle(.borderless)
-            .tint(.teal)
 
-            Button(role: .destructive) {
-                Task {
-                    await savedLayoutsController.delete(layout)
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 8) {
+                    PillBadge(text: "\(layout.nodes.count) nodes", color: .auraViolet)
+                    HStack(spacing: 8) {
+                        IconSquareButton(systemImage: "arrow.triangle.2.circlepath", tint: .auraTeal) {
+                            Task { await savedLayoutsController.overwrite(layout, with: canvasController.nodes) }
+                        }
+                        IconSquareButton(systemImage: "trash", tint: .auraDanger) {
+                            Task { await savedLayoutsController.delete(layout) }
+                        }
+                    }
                 }
-            } label: {
-                Image(systemName: "trash")
             }
-            .buttonStyle(.borderless)
+            .padding(16)
+            .background(Color.auraSurface, in: RoundedRectangle(cornerRadius: 18))
         }
+        .buttonStyle(.plain)
     }
 }

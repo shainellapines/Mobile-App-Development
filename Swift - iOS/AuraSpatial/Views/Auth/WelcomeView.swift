@@ -3,45 +3,58 @@
 //  AuraSpatial
 //
 //  Screen 1 (SRS Section 5): entry point, routes to Sign Up or Log In.
+//  Rebuilt to match the real prototype: a glowing violet headphones icon,
+//  a bold rounded display title, and a small live preview of the orbit
+//  motif used throughout the app.
 //
 
 import SwiftUI
 
 struct WelcomeView: View {
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
+        ZStack {
+            Color.auraBackground.ignoresSafeArea()
 
-            VStack(spacing: 8) {
-                Image(systemName: "waveform.circle.fill")
-                    .font(.system(size: 72))
-                    .foregroundStyle(.teal)
-                Text("AuraSpatial")
-                    .font(.system(.largeTitle, design: .rounded))
-                    .fontWeight(.bold)
-                Text("Architect your own spatial soundscape")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            VStack(spacing: 28) {
+                Spacer()
 
-            Spacer()
+                Image(systemName: "headphones")
+                    .font(.system(size: 34))
+                    .foregroundStyle(.white)
+                    .frame(width: 84, height: 84)
+                    .background(Color.auraViolet, in: Circle())
+                    .auraGlow(.auraViolet, radius: 28)
 
-            VStack(spacing: 12) {
-                NavigationLink("Log In") {
-                    LogInView()
+                VStack(spacing: 10) {
+                    Text("AuraSpatial")
+                        .auraDisplayFont(38, weight: .heavy)
+                        .foregroundStyle(.white)
+                    Text("Build 3D soundscapes.\nPlace audio in your world.")
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.auraTextSecondary)
                 }
-                .buttonStyle(.primaryAura)
 
-                NavigationLink("Sign Up") {
-                    SignUpView()
+                OrbitGlyph(size: 140)
+                    .padding(.top, 8)
+
+                Spacer()
+
+                VStack(spacing: 14) {
+                    NavigationLink("Log In") {
+                        LogInView()
+                    }
+                    .buttonStyle(.primaryAura)
+
+                    NavigationLink("Sign Up") {
+                        SignUpView()
+                    }
+                    .buttonStyle(.secondaryAura)
                 }
-                .buttonStyle(.secondaryAura)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 40)
             }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 48)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.black.gradient)
     }
 }
 

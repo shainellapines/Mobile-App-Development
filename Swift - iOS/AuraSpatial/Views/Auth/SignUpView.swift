@@ -3,7 +3,8 @@
 //  AuraSpatial
 //
 //  Screen 2 (SRS Section 5): account creation, gated by the simulated
-//  local session (FR-1.1).
+//  local session (FR-1.1). Rebuilt with AuraLabeledField to match the
+//  prototype's dark field styling.
 //
 
 import SwiftUI
@@ -15,31 +16,34 @@ struct SignUpView: View {
     @State private var password = ""
 
     var body: some View {
-        Form {
-            Section("Create your account") {
-                TextField("Username", text: $username)
-                    .textInputAutocapitalization(.never)
-                TextField("Email", text: $email)
-                    .textInputAutocapitalization(.never)
-                    .keyboardType(.emailAddress)
-                SecureField("Password", text: $password)
-            }
+        ZStack {
+            Color.auraBackground.ignoresSafeArea()
 
-            if let errorMessage = authController.errorMessage {
-                Text(errorMessage)
-                    .foregroundStyle(.red)
-                    .font(.footnote)
-            }
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    AuraLabeledField(label: "Username", placeholder: "Your name", text: $username)
+                    AuraLabeledField(label: "Email", placeholder: "you@example.com", text: $email, keyboardType: .emailAddress)
+                    AuraLabeledField(label: "Password", placeholder: "Choose a password", text: $password, isSecure: true)
 
-            Button("Sign Up") {
-                Task {
-                    await authController.signUp(username: username, email: email, password: password)
+                    if let errorMessage = authController.errorMessage {
+                        Text(errorMessage)
+                            .foregroundStyle(.auraDanger)
+                            .font(.footnote)
+                    }
+
+                    Button("Sign Up") {
+                        Task {
+                            await authController.signUp(username: username, email: email, password: password)
+                        }
+                    }
+                    .buttonStyle(.primaryAura)
+                    .padding(.top, 8)
                 }
+                .padding(24)
+                .padding(.top, 24)
             }
-            .buttonStyle(.primaryAura)
-            .listRowInsets(EdgeInsets())
-            .padding()
         }
         .navigationTitle("Sign Up")
+        .toolbarBackground(Color.auraBackground, for: .navigationBar)
     }
 }

@@ -2,8 +2,11 @@
 //  CommunitySoundscapeCardView.swift
 //  AuraSpatial
 //
-//  One Community Feed card - a reusable component (SRS Section 3.1) showing
-//  creator attribution, a Play/Pause toggle, and Fork.
+//  One Community Feed card - a reusable component (SRS Section 3.1).
+//  Rebuilt to match the prototype: a full-width animated waveform behind a
+//  centered play/pause button, then a footer with the title and an amber
+//  node-count pill. The waveform genuinely animates while playing, rather
+//  than being static artwork.
 //
 
 import SwiftUI
@@ -14,44 +17,64 @@ struct CommunitySoundscapeCardView: View {
     let onPlayToggle: () -> Void
     let onFork: () -> Void
 
+    /// Alternates the waveform tint per card, matching the prototype's mix
+    /// of violet- and teal-tinted cards.
+    private var waveformTint: Color {
+        (abs(soundscape.id.hashValue) % 2 == 0) ? .auraViolet : .auraTeal
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(soundscape.name)
-                    .font(.headline)
-                if let creator = soundscape.creatorUsername {
-                    Text("@\(creator)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+        VStack(spacing: 0) {
+            ZStack {
+                AnimatedWaveformBackground(tint: waveformTint, isPlaying: isPlaying)
+                    .padding(.horizontal, 16)
 
-            Text("\(soundscape.nodes.count) nodes")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 12) {
                 Button(action: onPlayToggle) {
-                    Label(isPlaying ? "Pause" : "Play", systemImage: isPlaying ? "pause.fill" : "play.fill")
+                    Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                        .background(waveformTint.opacity(0.9), in: Circle())
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.teal)
+                .buttonStyle(.plain)
                 .sensoryFeedback(.impact(weight: .light), trigger: isPlaying)
+            }
+            .frame(height: 80)
+            .background(Color.auraSurfaceElevated)
 
-                Button(action: onFork) {
-                    Label("Fork", systemImage: "arrow.triangle.branch")
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(soundscape.name)
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                        if let creator = soundscape.creatorUsername {
+                            Text("@\(creator)")
+                                .font(.caption)
+                                .foregroundStyle(.auraTextSecondary)
+                        }
+                    }
+                    Spacer()
+                    PillBadge(text: "\(soundscape.nodes.count) nodes", color: .auraAmber)
                 }
-                .buttonStyle(.bordered)
-            }
 
-            HStack {
-                Text("\(soundscape.likeCount) likes")
-                Text("\(soundscape.forkCount) forks")
+                HStack(spacing: 16) {
+                    Label("\(soundscape.likeCount)", systemImage: "heart.fill")
+                    Label("\(soundscape.forkCount)", systemImage: "arrow.triangle.branch")
+                    Spacer()
+                    Button(action: onFork) {
+                        Text("Fork")
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.auraViolet)
+                }
+                .font(.caption)
+                .foregroundStyle(.auraTextSecondary)
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            .padding(16)
+            .background(Color.auraSurface)
         }
-        .padding()
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 }

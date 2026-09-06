@@ -5,6 +5,7 @@
 //  The post-login shell: Canvas . Community . Saved Layouts (SRS Section 5).
 //  Owns and injects the three screen Controllers so sibling tabs can share
 //  state (e.g. Saved Layouts reading the Canvas's current nodes to overwrite).
+//  Tinted violet and given a dark tab bar to match the app's theme.
 //
 
 import SwiftUI
@@ -25,6 +26,10 @@ struct RootTabView: View {
             SavedLayoutsView()
                 .tabItem { Label("Saved", systemImage: "square.grid.2x2.fill") }
         }
+        .tint(.auraViolet)
+        .toolbarBackground(Color.auraSurface, for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
+        .toolbarColorScheme(.dark, for: .tabBar)
         .environment(canvasController)
         .environment(communityController)
         .environment(savedLayoutsController)

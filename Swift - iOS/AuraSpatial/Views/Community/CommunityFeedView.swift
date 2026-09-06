@@ -13,22 +13,27 @@ struct CommunityFeedView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(communityController.feed) { soundscape in
-                        CommunitySoundscapeCardView(
-                            soundscape: soundscape,
-                            isPlaying: communityController.isPlaying(soundscape.id),
-                            onPlayToggle: { communityController.togglePlay(soundscape.id) },
-                            onFork: {
-                                Task { await savedLayoutsController.fork(soundscape) }
-                            }
-                        )
+            ZStack {
+                Color.auraBackground.ignoresSafeArea()
+
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        ForEach(communityController.feed) { soundscape in
+                            CommunitySoundscapeCardView(
+                                soundscape: soundscape,
+                                isPlaying: communityController.isPlaying(soundscape.id),
+                                onPlayToggle: { communityController.togglePlay(soundscape.id) },
+                                onFork: {
+                                    Task { await savedLayoutsController.fork(soundscape) }
+                                }
+                            )
+                        }
                     }
+                    .padding(20)
                 }
-                .padding()
             }
             .navigationTitle("Community")
+            .toolbarBackground(Color.auraBackground, for: .navigationBar)
             .task {
                 await communityController.refresh()
             }

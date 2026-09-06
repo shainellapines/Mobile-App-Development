@@ -3,8 +3,9 @@
 //  AuraSpatial
 //
 //  App entry point. Injects the AuthController (the session Controller) into
-//  the environment and attempts to restore a previously simulated session
-//  (FR-1.1, FR-1.3).
+//  the environment, applies the app-wide violet tint and forced dark scheme
+//  matching the prototype, and attempts to restore a previously simulated
+//  session (FR-1.1, FR-1.3).
 //
 
 import SwiftUI
@@ -18,6 +19,7 @@ struct AuraSpatialApp: App {
             RootView()
                 .environment(authController)
                 .preferredColorScheme(.dark)
+                .tint(.auraViolet)
                 .task {
                     await authController.restoreSession()
                 }

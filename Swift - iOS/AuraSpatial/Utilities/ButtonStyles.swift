@@ -2,9 +2,10 @@
 //  ButtonStyles.swift
 //  AuraSpatial
 //
-//  Custom ButtonStyles (SRS Section 3.6) used across the auth flow -
-//  demonstrates the ButtonStyle protocol rather than relying only on the
-//  system's built-in styles.
+//  Custom ButtonStyles (SRS Section 3.6) matching the prototype's solid
+//  violet pill buttons, plus a floating action button style for the
+//  Canvas "+" control (the prototype uses a floating circular button,
+//  not a toolbar item).
 //
 
 import SwiftUI
@@ -12,12 +13,11 @@ import SwiftUI
 struct PrimaryAuraButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.headline)
+            .font(.system(.headline, design: .rounded).weight(.semibold))
             .frame(maxWidth: .infinity)
-            .padding()
-            .background(.teal)
-            .foregroundStyle(.black)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .padding(.vertical, 16)
+            .background(Color.auraViolet, in: Capsule())
+            .foregroundStyle(.white)
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(duration: 0.2), value: configuration.isPressed)
     }
@@ -26,17 +26,29 @@ struct PrimaryAuraButtonStyle: ButtonStyle {
 struct SecondaryAuraButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.headline)
+            .font(.system(.headline, design: .rounded).weight(.semibold))
             .frame(maxWidth: .infinity)
-            .padding()
-            .background(.white.opacity(0.08))
+            .padding(.vertical, 16)
+            .background(Color.white.opacity(0.06), in: Capsule())
             .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 14))
-            .overlay(
-                RoundedRectangle(cornerRadius: 14).stroke(.white.opacity(0.3), lineWidth: 1)
-            )
+            .overlay(Capsule().stroke(Color.white.opacity(0.18), lineWidth: 1))
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+/// The circular, glowing "+" control the prototype floats over the Canvas -
+/// replacing the plain toolbar button the first draft used.
+struct FloatingActionButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.title2.weight(.semibold))
+            .foregroundStyle(.white)
+            .frame(width: 56, height: 56)
+            .background(Color.auraViolet, in: Circle())
+            .auraGlow(.auraViolet, radius: 14)
+            .scaleEffect(configuration.isPressed ? 0.9 : 1)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 
@@ -46,4 +58,8 @@ extension ButtonStyle where Self == PrimaryAuraButtonStyle {
 
 extension ButtonStyle where Self == SecondaryAuraButtonStyle {
     static var secondaryAura: SecondaryAuraButtonStyle { SecondaryAuraButtonStyle() }
+}
+
+extension ButtonStyle where Self == FloatingActionButtonStyle {
+    static var floatingAura: FloatingActionButtonStyle { FloatingActionButtonStyle() }
 }
