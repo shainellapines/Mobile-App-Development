@@ -33,7 +33,12 @@ export default function RootLayout() {
             {/* The tabs draw their own headers, so the Stack header is hidden for them. */}
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="vault/profile" options={{ title: 'Edit Profile' }} />
+            {/* Vault category lists. Each form sets its own title ("Add …" / "Edit …"). */}
+            <Stack.Screen name="vault/education/index" options={{ title: 'Education' }} />
             <Stack.Screen name="vault/experience/index" options={{ title: 'Experience' }} />
+            <Stack.Screen name="vault/projects/index" options={{ title: 'Projects' }} />
+            <Stack.Screen name="vault/skills/index" options={{ title: 'Skills' }} />
+            <Stack.Screen name="vault/certifications/index" options={{ title: 'Certifications' }} />
           </Stack>
         </SQLiteProvider>
       </Suspense>

@@ -1,4 +1,5 @@
 import type { ExperienceType } from '@/types/experience';
+import type { SkillCategory, SkillLevel } from '@/types/skill';
 import { isEndBeforeStart } from '@/utils/dates';
 
 /**
@@ -86,6 +87,88 @@ export function validateExperience(values: ExperienceFormValues): FormErrors<Exp
   if (values.organization.trim() === '') errors.organization = 'Company or organization is required';
   if (isEndBeforeStart(values.startDate, values.endDate)) {
     errors.endDate = 'End date cannot be before the start date';
+  }
+
+  return errors;
+}
+
+/** Field values of the Education form. */
+export type EducationFormValues = {
+  school: string;
+  degree: string;
+  startDate: string | null;
+  endDate: string | null;
+  honors: string;
+  description: string;
+};
+
+export function validateEducation(values: EducationFormValues): FormErrors<EducationFormValues> {
+  const errors: FormErrors<EducationFormValues> = {};
+
+  if (values.school.trim() === '') errors.school = 'School is required';
+  if (values.degree.trim() === '') errors.degree = 'Degree / program is required';
+  if (isEndBeforeStart(values.startDate, values.endDate)) {
+    errors.endDate = 'End date cannot be before the start date';
+  }
+
+  return errors;
+}
+
+/** Field values of the Project form. */
+export type ProjectFormValues = {
+  name: string;
+  role: string;
+  techUsed: string;
+  link: string;
+  startDate: string | null;
+  endDate: string | null;
+  description: string;
+};
+
+export function validateProject(values: ProjectFormValues): FormErrors<ProjectFormValues> {
+  const errors: FormErrors<ProjectFormValues> = {};
+
+  if (values.name.trim() === '') errors.name = 'Project name is required';
+  if (values.link.trim() !== '' && !isValidUrl(values.link)) {
+    errors.link = 'Enter a valid link, e.g. github.com/juan/project';
+  }
+  if (isEndBeforeStart(values.startDate, values.endDate)) {
+    errors.endDate = 'End date cannot be before the start date';
+  }
+
+  return errors;
+}
+
+/** Field values of the Skill form. 'none' = no level chosen (saved as NULL). */
+export type SkillFormValues = {
+  name: string;
+  category: SkillCategory;
+  level: SkillLevel | 'none';
+};
+
+export function validateSkill(values: SkillFormValues): FormErrors<SkillFormValues> {
+  const errors: FormErrors<SkillFormValues> = {};
+  if (values.name.trim() === '') errors.name = 'Skill name is required';
+  return errors;
+}
+
+/** Field values of the Certification form. */
+export type CertificationFormValues = {
+  name: string;
+  issuer: string;
+  issueDate: string | null;
+  expiryDate: string | null;
+  credentialId: string;
+};
+
+export function validateCertification(
+  values: CertificationFormValues
+): FormErrors<CertificationFormValues> {
+  const errors: FormErrors<CertificationFormValues> = {};
+
+  if (values.name.trim() === '') errors.name = 'Certification name is required';
+  if (isEndBeforeStart(values.issueDate, values.expiryDate)) {
+    errors.expiryDate = 'Expiry date cannot be before the issue date';
   }
 
   return errors;

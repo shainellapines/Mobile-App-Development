@@ -1,6 +1,8 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { nowIso } from '@/db/client';
+import { deleteAttachmentsFor } from '@/db/repositories/attachmentRepo';
+import type { EntryRepo } from '@/db/repositories/types';
 import type { Experience, ExperienceInput, ExperienceType } from '@/types/experience';
 
 /** The row exactly as SQLite returns it (snake_case columns). */
@@ -96,14 +98,19 @@ export async function updateExperience(
   );
 }
 
-/**
- * Deletes an experience together with its attachment records, in one transaction.
- * The attachments table has no foreign key (it is shared by many tables), so we clean it up here.
- * TODO (step 1.7): also delete the physical attachment files via fileService.
- */
+/** Deletes an experience together with its attachments, in one transaction (all or nothing). */
 export async function deleteExperience(db: SQLiteDatabase, id: number): Promise<void> {
   await db.withTransactionAsync(async () => {
-    await db.runAsync("DELETE FROM attachments WHERE owner_type = 'experience' AND owner_id = ?", [id]);
+    await deleteAttachmentsFor(db, 'experience', id);
     await db.runAsync('DELETE FROM experiences WHERE id = ?', [id]);
   });
 }
+
+/** All operations in one object, so the generic hooks can use this repository. */
+export const experienceRepo: EntryRepo<Experience, ExperienceInput> = {
+  list: listExperiences,
+  get: getExperience,
+  create: createExperience,
+  update: updateExperience,
+  remove: deleteExperience,
+};

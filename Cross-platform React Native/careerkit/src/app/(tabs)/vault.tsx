@@ -1,4 +1,6 @@
+import type Ionicons from '@expo/vector-icons/Ionicons';
 import { router, type Href } from 'expo-router';
+import type { ComponentProps } from 'react';
 import { StyleSheet, Text } from 'react-native';
 
 import { Card } from '@/components/Card';
@@ -7,10 +9,51 @@ import { Screen } from '@/components/Screen';
 import { Colors, FontSize, FontWeight } from '@/constants/theme';
 import { useProfile } from '@/hooks/useProfile';
 
+type VaultCategory = {
+  title: string;
+  subtitle: string;
+  icon: ComponentProps<typeof Ionicons>['name'];
+  href: Href;
+};
+
 /**
- * Career Vault home: the Profile plus the five vault categories.
- * Categories not built yet (step 1.6) are shown disabled.
+ * Each category's list is the index.tsx in its folder, which opens at e.g. /vault/education.
+ * The generated route types list these as ".../index" instead, so we mark them as Href.
  */
+const CATEGORIES: VaultCategory[] = [
+  {
+    title: 'Education',
+    subtitle: 'Degrees, schools, honors',
+    icon: 'school-outline',
+    href: '/vault/education' as Href,
+  },
+  {
+    title: 'Experience',
+    subtitle: 'Jobs, OJT, volunteer work, organizations',
+    icon: 'briefcase-outline',
+    href: '/vault/experience' as Href,
+  },
+  {
+    title: 'Projects',
+    subtitle: 'Capstone, school, and personal projects',
+    icon: 'code-slash-outline',
+    href: '/vault/projects' as Href,
+  },
+  {
+    title: 'Skills',
+    subtitle: 'Technical, soft skills, languages, tools',
+    icon: 'construct-outline',
+    href: '/vault/skills' as Href,
+  },
+  {
+    title: 'Certifications',
+    subtitle: 'TESDA, online courses, licenses',
+    icon: 'ribbon-outline',
+    href: '/vault/certifications' as Href,
+  },
+];
+
+/** Career Vault home: the Profile plus the five vault categories. */
 export default function VaultScreen() {
   // useProfile reloads on focus, so the name updates right after editing the profile.
   const { profile } = useProfile();
@@ -32,18 +75,15 @@ export default function VaultScreen() {
 
       <Text style={styles.section}>Categories</Text>
       <Card>
-        <ListItem icon="school-outline" title="Education" subtitle="Coming soon" disabled />
-        <ListItem
-          icon="briefcase-outline"
-          title="Experience"
-          subtitle="Jobs, OJT, volunteer work, organizations"
-          // The folder's index.tsx opens at /vault/experience. The generated route types list it
-          // as ".../index" instead, so we tell TypeScript this path is valid.
-          onPress={() => router.push('/vault/experience' as Href)}
-        />
-        <ListItem icon="code-slash-outline" title="Projects" subtitle="Coming soon" disabled />
-        <ListItem icon="construct-outline" title="Skills" subtitle="Coming soon" disabled />
-        <ListItem icon="ribbon-outline" title="Certifications" subtitle="Coming soon" disabled />
+        {CATEGORIES.map((c) => (
+          <ListItem
+            key={c.title}
+            icon={c.icon}
+            title={c.title}
+            subtitle={c.subtitle}
+            onPress={() => router.push(c.href)}
+          />
+        ))}
       </Card>
     </Screen>
   );
