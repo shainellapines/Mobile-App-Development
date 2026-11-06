@@ -46,6 +46,13 @@ export function useEntryForm<V, I>({
     (value: V[K]) =>
       setValues((prev) => ({ ...prev, [field]: value }));
 
+  /**
+   * Changes several fields at once, based on the current values.
+   * Used when one change affects another, e.g. a new issue date also fills in the expiry date.
+   */
+  const patchValues = (update: (prev: V) => Partial<V>) =>
+    setValues((prev) => ({ ...prev, ...update(prev) }));
+
   const handleSave = async () => {
     setSubmitted(true);
     if (Object.keys(errors).length > 0) {
@@ -78,5 +85,5 @@ export function useEntryForm<V, I>({
       }
     : undefined;
 
-  return { values, setField, errors: visibleErrors, saving, handleSave, handleDelete };
+  return { values, setField, patchValues, errors: visibleErrors, saving, handleSave, handleDelete };
 }

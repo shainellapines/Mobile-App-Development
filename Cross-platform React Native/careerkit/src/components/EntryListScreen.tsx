@@ -31,6 +31,8 @@ type EntryListScreenProps<T extends { id: number }> = {
   /** e.g. "Add Education" — used for the empty state button and the FAB. */
   addLabel: string;
   empty: { icon: ComponentProps<typeof Ionicons>['name']; title: string; message: string };
+  /** Optional: extra buttons shown above the list AND in the empty state (e.g. "Add from template"). */
+  actions?: ReactNode;
   /** Optional: extra controls under the search box (e.g. filter chips). */
   filters?: ReactNode;
   /** Optional: hides items that do not match the screen's filters. */
@@ -56,6 +58,7 @@ export function EntryListScreen<T extends { id: number }>({
   onEdit,
   addLabel,
   empty,
+  actions,
   filters,
   filter,
   badge,
@@ -81,8 +84,9 @@ export function EntryListScreen<T extends { id: number }>({
           title={empty.title}
           message={empty.message}
           actionLabel={addLabel}
-          onAction={onAdd}
-        />
+          onAction={onAdd}>
+          {actions}
+        </EmptyState>
       </Screen>
     );
   }
@@ -105,6 +109,7 @@ export function EntryListScreen<T extends { id: number }>({
           keyboardShouldPersistTaps="handled"
           ListHeaderComponent={
             <View style={styles.header}>
+              {actions}
               <TextField
                 label="Search"
                 placeholder={searchPlaceholder}

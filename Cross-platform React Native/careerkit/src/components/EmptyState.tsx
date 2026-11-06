@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -12,10 +12,12 @@ type EmptyStateProps = {
   /** Label and handler for the "Add" button (FR-V4). Both are needed to show the button. */
   actionLabel?: string;
   onAction?: () => void;
+  /** Optional extra content under the button (e.g. a second action). */
+  children?: ReactNode;
 };
 
 /** Friendly placeholder shown when a list has no data yet. */
-export function EmptyState({ icon, title, message, actionLabel, onAction }: EmptyStateProps) {
+export function EmptyState({ icon, title, message, actionLabel, onAction, children }: EmptyStateProps) {
   return (
     <View style={styles.container}>
       <Ionicons name={icon} size={FontSize.xxl * 2} color={Colors.mutedText} />
@@ -24,6 +26,7 @@ export function EmptyState({ icon, title, message, actionLabel, onAction }: Empt
       {actionLabel && onAction ? (
         <Button title={actionLabel} icon="add" onPress={onAction} />
       ) : null}
+      {children}
     </View>
   );
 }

@@ -17,10 +17,12 @@ import {
   REQUIREMENT_STATUS_INFO,
 } from '@/constants/requirements';
 import { Colors, FontSize, FontWeight, Spacing } from '@/constants/theme';
+import { VALIDITY_DISCLAIMER } from '@/constants/requirementTemplates';
 import { useEntryForm } from '@/hooks/useEntryForm';
 import { useIdParam, useRequirement } from '@/hooks/useVaultEntries';
 import type { Requirement, RequirementInput } from '@/types/requirement';
 import { expiryCountdown, getRequirementStatus } from '@/utils/requirementStatus';
+import { findTemplate, validityLabel, valuesForNewIssueDate } from '@/utils/requirementTemplates';
 import { emptyToNull, validateRequirement, type RequirementFormValues } from '@/utils/validators';
 
 function toFormValues(r: Requirement | null): RequirementFormValues {
@@ -73,7 +75,7 @@ type FormProps = {
 };
 
 function RequirementForm({ initial, ownerId, onSave, onDelete }: FormProps) {
-  const { values, setField, errors, saving, handleSave, handleDelete } = useEntryForm({
+  const { values, setField, patchValues, errors, saving, handleSave, handleDelete } = useEntryForm({
     initialValues: toFormValues(initial),
     validate: validateRequirement,
     toInput,
@@ -81,6 +83,12 @@ function RequirementForm({ initial, ownerId, onSave, onDelete }: FormProps) {
     onDelete,
     label: 'requirement',
   });
+
+  // New issue date → maybe pre-fill the expiry and untick "not yet obtained" (FR-Q4).
+  const handleIssueDate = (issueDate: string | null) =>
+    patchValues((prev) => valuesForNewIssueDate(prev, issueDate));
+
+  const templateMonths = findTemplate(values.name)?.defaultValidityMonths ?? null;
 
   // Live status preview: updates as the user changes dates, using the same rules as the list.
   const preview = toInput(values);
@@ -126,11 +134,11 @@ function RequirementForm({ initial, ownerId, onSave, onDelete }: FormProps) {
       <Card>
         <Checkbox
           label="I don't have this document yet"
-          description="Shows as “Not yet obtained” until you add an issue date"
+          description="Unticks itself when you enter an issue date"
           checked={values.notYetObtained}
           onChange={setField('notYetObtained')}
         />
-        <DateField label="Issue date" value={values.issueDate} onChange={setField('issueDate')} clearable />
+        <DateField label="Issue date" value={values.issueDate} onChange={handleIssueDate} clearable />
         <DateField
           label="Expiry date"
           placeholder="Does not expire"
@@ -140,7 +148,9 @@ function RequirementForm({ initial, ownerId, onSave, onDelete }: FormProps) {
           clearable
         />
         <FieldHint>
-          Validity rules differ by issuing office and employer. Always check the date printed on your document.
+          {templateMonths
+            ? `Expiry is suggested as ${validityLabel(templateMonths)} after the issue date. ${VALIDITY_DISCLAIMER}`
+            : 'Validity rules differ by issuing office and employer. Always check the date printed on your document.'}
         </FieldHint>
       </Card>
 

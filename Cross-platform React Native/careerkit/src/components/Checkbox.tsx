@@ -9,17 +9,20 @@ type CheckboxProps = {
   description?: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  /** Greys the row out and ignores taps. */
+  disabled?: boolean;
 };
 
 /** Tappable row with a checkbox and a label. The whole row is the touch target. */
-export function Checkbox({ label, description, checked, onChange }: CheckboxProps) {
+export function Checkbox({ label, description, checked, onChange, disabled = false }: CheckboxProps) {
   return (
     <Pressable
       onPress={() => onChange(!checked)}
+      disabled={disabled}
       accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      accessibilityState={{ checked, disabled }}
       accessibilityLabel={label}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.row, pressed && styles.pressed, disabled && styles.disabled]}>
       <Ionicons
         name={checked ? 'checkbox' : 'square-outline'}
         size={FontSize.xl}
@@ -49,6 +52,9 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.6,
+  },
+  disabled: {
+    opacity: 0.45,
   },
   text: {
     flex: 1,

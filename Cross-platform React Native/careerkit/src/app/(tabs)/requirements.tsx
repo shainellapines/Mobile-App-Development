@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Button } from '@/components/Button';
 import { EntryListScreen } from '@/components/EntryListScreen';
 import { FilterChips, type FilterOption } from '@/components/FilterChips';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -53,6 +54,14 @@ export default function RequirementsScreen() {
       filter={(r) =>
         (statusFilter === 'all' || getRequirementStatus(r) === statusFilter) &&
         (categoryFilter === 'all' || r.category === categoryFilter)
+      }
+      actions={
+        <Button
+          title="Add from template"
+          icon="list-outline"
+          variant="secondary"
+          onPress={() => router.push('/requirements/templates')}
+        />
       }
       filters={
         <View style={styles.filters}>

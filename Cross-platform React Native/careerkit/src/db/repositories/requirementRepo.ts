@@ -113,3 +113,14 @@ export const requirementRepo: EntryRepo<Requirement, RequirementInput> = {
   update: updateRequirement,
   remove: deleteRequirement,
 };
+
+/**
+ * Smart Templates (FR-Q2): adds several requirements at once, all in ONE transaction,
+ * so either every chosen document is added or none are. Returns how many were added.
+ */
+export async function createManyRequirements(db: SQLiteDatabase, inputs: RequirementInput[]): Promise<number> {
+  await db.withTransactionAsync(async () => {
+    for (const input of inputs) await createRequirement(db, input);
+  });
+  return inputs.length;
+}

@@ -40,6 +40,7 @@ export default function RootLayout() {
             <Stack.Screen name="vault/skills/index" options={{ title: 'Skills' }} />
             <Stack.Screen name="vault/certifications/index" options={{ title: 'Certifications' }} />
             <Stack.Screen name="resume/index" options={{ title: 'Resumes' }} />
+            <Stack.Screen name="requirements/templates" options={{ title: 'Smart Templates' }} />
           </Stack>
         </SQLiteProvider>
       </Suspense>
