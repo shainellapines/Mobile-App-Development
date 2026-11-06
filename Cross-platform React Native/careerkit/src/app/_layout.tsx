@@ -1,11 +1,12 @@
 import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { Colors, FontWeight } from '@/constants/theme';
 import { DATABASE_NAME, initDatabase } from '@/db/client';
+import { initNotifications } from '@/services/notificationService';
 
 // If opening the DB or a migration fails, Expo Router shows its error screen with a "Retry" button.
 export { ErrorBoundary } from 'expo-router';
@@ -15,9 +16,15 @@ export { ErrorBoundary } from 'expo-router';
  * - Opens the SQLite database and runs migrations (SQLiteProvider + initDatabase) BEFORE any
  *   screen renders, so every screen can safely use the DB. A spinner shows while that happens.
  * - Wraps every screen in a Stack navigator with the CareerKit header style.
+ * - Sets up local notifications (expiry reminders).
  * Later phases add the app-lock gate (3.1) here.
  */
 export default function RootLayout() {
+  // Set up local notifications once (banner style + Android channel) for expiry reminders.
+  useEffect(() => {
+    initNotifications().catch((e) => console.warn('[notifications] init failed', e));
+  }, []);
+
   return (
     <>
       <StatusBar style="light" />

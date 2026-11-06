@@ -6,7 +6,6 @@ import { certificationRepo } from '@/db/repositories/certificationRepo';
 import { educationRepo } from '@/db/repositories/educationRepo';
 import { experienceRepo } from '@/db/repositories/experienceRepo';
 import { projectRepo } from '@/db/repositories/projectRepo';
-import { requirementRepo } from '@/db/repositories/requirementRepo';
 import { skillRepo } from '@/db/repositories/skillRepo';
 import type { EntryRepo } from '@/db/repositories/types';
 
@@ -102,7 +101,3 @@ export const useSkill = (id: number | undefined) => useEntry(id, skillRepo);
 
 export const useCertifications = () => useEntryList(certificationRepo);
 export const useCertification = (id: number | undefined) => useEntry(id, certificationRepo);
-
-// Requirements Tracker (not part of the vault, but uses the same generic hooks).
-export const useRequirements = () => useEntryList(requirementRepo);
-export const useRequirement = (id: number | undefined) => useEntry(id, requirementRepo);

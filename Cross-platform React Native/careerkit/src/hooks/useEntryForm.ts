@@ -4,18 +4,21 @@ import { Alert } from 'react-native';
 
 import type { FormErrors } from '@/utils/validators';
 
-type UseEntryFormOptions<V, I> = {
+type UseEntryFormOptions<V, I, R> = {
   /** Starting field values (empty for "add", the saved record for "edit"). */
   initialValues: V;
   /** Returns an error message per invalid field; {} means valid. */
   validate: (values: V) => FormErrors<V>;
   /** Converts form values (plain strings while typing) into what the repository saves. */
   toInput: (values: V) => I;
-  onSave: (input: I) => Promise<unknown>;
+  /** R = whatever saving returns (e.g. the new id, or reminder info). */
+  onSave: (input: I) => Promise<R>;
   /** Only in edit mode. */
   onDelete?: () => Promise<void>;
   /** Used in messages, e.g. "education" → "Your education has been saved." */
   label: string;
+  /** Optional: a custom success message built from what onSave returned. */
+  successMessage?: (result: R) => string;
 };
 
 /**
@@ -25,14 +28,15 @@ type UseEntryFormOptions<V, I> = {
  * - on Save: validate → convert → save → success message → go back,
  * - on Delete: delete → go back.
  */
-export function useEntryForm<V, I>({
+export function useEntryForm<V, I, R = unknown>({
   initialValues,
   validate,
   toInput,
   onSave,
   onDelete,
   label,
-}: UseEntryFormOptions<V, I>) {
+  successMessage,
+}: UseEntryFormOptions<V, I, R>) {
   const [values, setValues] = useState<V>(initialValues);
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -62,8 +66,8 @@ export function useEntryForm<V, I>({
 
     setSaving(true);
     try {
-      await onSave(toInput(values));
-      Alert.alert('Saved', `Your ${label} has been saved.`);
+      const result = await onSave(toInput(values));
+      Alert.alert('Saved', successMessage ? successMessage(result) : `Your ${label} has been saved.`);
       router.back();
     } catch (e) {
       console.warn(`[${label}] save failed`, e);

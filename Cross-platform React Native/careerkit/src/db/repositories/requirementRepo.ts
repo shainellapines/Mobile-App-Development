@@ -124,3 +124,12 @@ export async function createManyRequirements(db: SQLiteDatabase, inputs: Require
   });
   return inputs.length;
 }
+
+/** Remembers which scheduled notification belongs to a requirement (null = none). */
+export async function setRequirementNotificationId(
+  db: SQLiteDatabase,
+  id: number,
+  notificationId: string | null
+): Promise<void> {
+  await db.runAsync('UPDATE requirements SET notification_id = ? WHERE id = ?', [notificationId, id]);
+}

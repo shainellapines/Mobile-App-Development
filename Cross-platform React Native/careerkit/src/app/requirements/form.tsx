@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { AttachmentPicker } from '@/components/AttachmentPicker';
+import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Checkbox } from '@/components/Checkbox';
 import { DateField } from '@/components/DateField';
@@ -19,8 +20,11 @@ import {
 import { Colors, FontSize, FontWeight, Spacing } from '@/constants/theme';
 import { VALIDITY_DISCLAIMER } from '@/constants/requirementTemplates';
 import { useEntryForm } from '@/hooks/useEntryForm';
-import { useIdParam, useRequirement } from '@/hooks/useVaultEntries';
+import { useRequirement, type RequirementSaveResult } from '@/hooks/useRequirements';
+import { useIdParam } from '@/hooks/useVaultEntries';
+import { sendTestReminder } from '@/services/notificationService';
 import type { Requirement, RequirementInput } from '@/types/requirement';
+import { formatDate, toIsoDate } from '@/utils/dates';
 import { expiryCountdown, getRequirementStatus } from '@/utils/requirementStatus';
 import { findTemplate, validityLabel, valuesForNewIssueDate } from '@/utils/requirementTemplates';
 import { emptyToNull, validateRequirement, type RequirementFormValues } from '@/utils/validators';
@@ -36,6 +40,18 @@ function toFormValues(r: Requirement | null): RequirementFormValues {
     reminderDays: String(r?.reminderDaysBefore ?? DEFAULT_REMINDER_DAYS),
     notes: r?.notes ?? '',
   };
+}
+
+/** The "Saved" message also says what happened with the reminder (FR-Q5). */
+function saveMessage({ reminder }: RequirementSaveResult): string {
+  switch (reminder.kind) {
+    case 'scheduled':
+      return `Saved. We'll remind you on ${formatDate(toIsoDate(reminder.fireDate))} at 9:00 AM.`;
+    case 'no_permission':
+      return "Saved. Reminders are off — allow notifications for this app in your phone's Settings to get expiry reminders.";
+    default:
+      return 'Your requirement has been saved.';
+  }
 }
 
 function toInput(v: RequirementFormValues): RequirementInput {
@@ -70,7 +86,7 @@ export default function RequirementFormScreen() {
 type FormProps = {
   initial: Requirement | null;
   ownerId: number | undefined;
-  onSave: (input: RequirementInput) => Promise<unknown>;
+  onSave: (input: RequirementInput) => Promise<RequirementSaveResult>;
   onDelete?: () => Promise<void>;
 };
 
@@ -82,6 +98,7 @@ function RequirementForm({ initial, ownerId, onSave, onDelete }: FormProps) {
     onSave,
     onDelete,
     label: 'requirement',
+    successMessage: saveMessage,
   });
 
   // New issue date → maybe pre-fill the expiry and untick "not yet obtained" (FR-Q4).
@@ -163,7 +180,24 @@ function RequirementForm({ initial, ownerId, onSave, onDelete }: FormProps) {
           error={errors.reminderDays}
           keyboardType="number-pad"
         />
-        <FieldHint>Reminders arrive at 9:00 AM. (Notifications are switched on in a later update.)</FieldHint>
+        <FieldHint>
+          {"You'll get a phone notification at 9:00 AM that many days before the expiry date. Works offline."}
+        </FieldHint>
+        {__DEV__ ? (
+          // Development only: lets the team check on a real phone that notifications appear.
+          <Button
+            title="Send a test reminder (10 s)"
+            icon="notifications-outline"
+            variant="secondary"
+            onPress={async () => {
+              const ok = await sendTestReminder(values.name.trim() || 'Your document');
+              Alert.alert(
+                ok ? 'Test reminder scheduled' : 'Notifications are off',
+                ok ? 'Wait about 10 seconds. You can leave the app.' : "Allow notifications for this app in your phone's Settings."
+              );
+            }}
+          />
+        ) : null}
         <TextField
           label="Notes"
           placeholder="Where to get it, fees, requirements to bring…"

@@ -13,7 +13,7 @@ import {
   requirementCategoryLabel,
 } from '@/constants/requirements';
 import { Spacing } from '@/constants/theme';
-import { useRequirements } from '@/hooks/useVaultEntries';
+import { useRequirements } from '@/hooks/useRequirements';
 import type { RequirementCategory, RequirementStatus } from '@/types/requirement';
 import { formatDate } from '@/utils/dates';
 import { expiryCountdown, getRequirementStatus, sortByUrgency } from '@/utils/requirementStatus';

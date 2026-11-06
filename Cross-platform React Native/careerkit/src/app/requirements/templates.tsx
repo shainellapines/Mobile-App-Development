@@ -11,7 +11,7 @@ import { Select, type SelectOption } from '@/components/Select';
 import { REQUIREMENT_TEMPLATES, VALIDITY_DISCLAIMER, type TemplateSet } from '@/constants/requirementTemplates';
 import { Colors, FontSize, FontWeight } from '@/constants/theme';
 import { useRequirementTemplates } from '@/hooks/useRequirementTemplates';
-import { useRequirements } from '@/hooks/useVaultEntries';
+import { useRequirements } from '@/hooks/useRequirements';
 import { sameDocumentName, validityLabel } from '@/utils/requirementTemplates';
 
 const SET_OPTIONS: readonly SelectOption<TemplateSet>[] = [
