@@ -41,7 +41,7 @@ export default function SkillFormScreen() {
 
 type FormProps = {
   initial: Skill | null;
-  onSave: (input: SkillInput) => Promise<void>;
+  onSave: (input: SkillInput) => Promise<unknown>;
   onDelete?: () => Promise<void>;
 };
 

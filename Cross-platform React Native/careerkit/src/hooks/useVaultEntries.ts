@@ -60,13 +60,12 @@ export function useEntry<T, I>(id: number | undefined, repo: EntryRepo<T, I>) {
     }, [db, id, repo])
   );
 
+  /** Creates or updates, and returns the record's id (new id when creating). */
   const save = useCallback(
-    async (input: I) => {
-      if (id === undefined) {
-        await repo.create(db, input);
-      } else {
-        await repo.update(db, id, input);
-      }
+    async (input: I): Promise<number> => {
+      if (id === undefined) return repo.create(db, input);
+      await repo.update(db, id, input);
+      return id;
     },
     [db, id, repo]
   );

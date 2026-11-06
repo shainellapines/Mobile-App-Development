@@ -57,7 +57,7 @@ type FormProps = {
   initial: Experience | null;
   /** The saved record's id (undefined while adding), used for attachments. */
   ownerId: number | undefined;
-  onSave: (input: ExperienceInput) => Promise<void>;
+  onSave: (input: ExperienceInput) => Promise<unknown>;
   onDelete?: () => Promise<void>;
 };
 

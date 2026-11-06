@@ -64,7 +64,7 @@ type FormProps = {
   initial: Project | null;
   /** The saved record's id (undefined while adding), used for attachments. */
   ownerId: number | undefined;
-  onSave: (input: ProjectInput) => Promise<void>;
+  onSave: (input: ProjectInput) => Promise<unknown>;
   onDelete?: () => Promise<void>;
 };
 

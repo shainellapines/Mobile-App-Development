@@ -53,7 +53,7 @@ type FormProps = {
   initial: Education | null;
   /** The saved record's id (undefined while adding), used for attachments. */
   ownerId: number | undefined;
-  onSave: (input: EducationInput) => Promise<void>;
+  onSave: (input: EducationInput) => Promise<unknown>;
   onDelete?: () => Promise<void>;
 };
 

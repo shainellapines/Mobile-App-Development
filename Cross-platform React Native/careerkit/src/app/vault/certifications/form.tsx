@@ -51,7 +51,7 @@ type FormProps = {
   initial: Certification | null;
   /** The saved record's id (undefined while adding), used for attachments. */
   ownerId: number | undefined;
-  onSave: (input: CertificationInput) => Promise<void>;
+  onSave: (input: CertificationInput) => Promise<unknown>;
   onDelete?: () => Promise<void>;
 };
 

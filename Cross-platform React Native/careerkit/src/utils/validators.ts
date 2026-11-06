@@ -173,3 +173,15 @@ export function validateCertification(
 
   return errors;
 }
+
+/** Field values of the Resume builder (only the text fields need validating). */
+export type ResumeFormValues = {
+  title: string;
+  targetRole: string;
+};
+
+export function validateResume(values: ResumeFormValues): FormErrors<ResumeFormValues> {
+  const errors: FormErrors<ResumeFormValues> = {};
+  if (values.title.trim() === '') errors.title = 'Give this resume a name, e.g. "Front-End Dev – Accenture"';
+  return errors;
+}

@@ -565,7 +565,7 @@ Work top to bottom. Check items off as they are completed.
 - [x] 1.5 Vault CRUD for one category end-to-end (Experience) — this becomes the pattern
 - [x] 1.6 Vault CRUD for Education, Projects, Skills, Certifications (FR-V1, V3, V4)
 - [x] 1.7 Document Locker: `fileService`, `AttachmentPicker`, attach/view/delete (FR-D1–D4)
-- [ ] 1.8 Resume Builder: selection screen, `ats_simple` HTML template, preview, export/share, saved versions (FR-R1–R6)
+- [x] 1.8 Resume Builder: selection screen, `ats_simple` HTML template, preview, export/share, saved versions (FR-R1–R6)
 
 ### Phase 2 — Differentiators
 - [ ] 2.1 Requirements Tracker CRUD + `StatusBadge` + auto status (FR-Q1, Q3, Q6)

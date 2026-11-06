@@ -1,5 +1,6 @@
 import type { SelectOption } from '@/components/Select';
 import type { ExperienceType } from '@/types/experience';
+import type { ResumeTemplate } from '@/types/resume';
 import type { SkillCategory, SkillLevel } from '@/types/skill';
 
 /** Choices for the Experience "Type" field, with user-friendly labels. */
@@ -37,4 +38,13 @@ export function skillCategoryLabel(category: SkillCategory): string {
 
 export function skillLevelLabel(level: SkillLevel | null): string {
   return SKILL_LEVEL_OPTIONS.find((o) => o.value === level)?.label ?? '';
+}
+
+/** Resume templates the user can pick. "modern" is added in Phase 3 (step 3.2). */
+export const RESUME_TEMPLATE_OPTIONS: readonly SelectOption<ResumeTemplate>[] = [
+  { value: 'ats_simple', label: 'ATS Simple' },
+];
+
+export function resumeTemplateLabel(template: ResumeTemplate): string {
+  return template === 'modern' ? 'Modern' : 'ATS Simple';
 }

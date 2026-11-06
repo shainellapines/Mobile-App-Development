@@ -2,6 +2,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { nowIso } from '@/db/client';
 import { deleteAttachmentsFor } from '@/db/repositories/attachmentRepo';
+import { deleteResumeItemsFor } from '@/db/repositories/resumeItemRepo';
 import type { EntryRepo } from '@/db/repositories/types';
 import { deleteStoredFiles } from '@/services/fileService';
 import type { Education, EducationInput } from '@/types/education';
@@ -66,11 +67,15 @@ async function updateEducation(db: SQLiteDatabase, id: number, input: EducationI
   );
 }
 
-/** Deletes the record, its attachment rows (one transaction), then the attachment files. */
+/**
+ * Deletes the record, its attachment rows, and its place in saved resumes (one transaction),
+ * then the attachment files.
+ */
 async function deleteEducation(db: SQLiteDatabase, id: number): Promise<void> {
   let filePaths: string[] = [];
   await db.withTransactionAsync(async () => {
     filePaths = await deleteAttachmentsFor(db, 'education', id);
+    await deleteResumeItemsFor(db, 'education', id);
     await db.runAsync('DELETE FROM education WHERE id = ?', [id]);
   });
   // Only after the DB change is saved: remove the physical files (FR-D3).

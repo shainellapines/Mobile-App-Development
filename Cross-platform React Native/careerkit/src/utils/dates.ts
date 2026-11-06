@@ -1,6 +1,6 @@
 import { format, isValid, parseISO } from 'date-fns';
 
-import { DISPLAY_DATE_FORMAT, ISO_DATE_FORMAT } from '@/constants/dates';
+import { DISPLAY_DATE_FORMAT, ISO_DATE_FORMAT, RESUME_DATE_FORMAT } from '@/constants/dates';
 
 /** Date object → "2026-11-06" (the format stored in the database). */
 export function toIsoDate(date: Date): string {
@@ -36,4 +36,18 @@ export function formatDateRange(start: string | null, end: string | null): strin
  */
 export function isEndBeforeStart(start: string | null, end: string | null): boolean {
   return Boolean(start && end && end < start);
+}
+
+/** One date as it appears on a resume: "Jun 2025". Empty if there is no date. */
+export function formatResumeDate(iso: string | null): string {
+  const date = parseIsoDate(iso);
+  return date ? format(date, RESUME_DATE_FORMAT) : '';
+}
+
+/** Resume-style range: "Jun 2025 – Present" or "Jun 2019 – Apr 2023". Empty if no dates. */
+export function formatResumeDateRange(start: string | null, end: string | null): string {
+  const from = formatResumeDate(start);
+  const to = end ? formatResumeDate(end) : 'Present';
+  if (!from) return end ? to : '';
+  return `${from} – ${to}`;
 }

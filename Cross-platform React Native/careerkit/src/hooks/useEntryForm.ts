@@ -11,7 +11,7 @@ type UseEntryFormOptions<V, I> = {
   validate: (values: V) => FormErrors<V>;
   /** Converts form values (plain strings while typing) into what the repository saves. */
   toInput: (values: V) => I;
-  onSave: (input: I) => Promise<void>;
+  onSave: (input: I) => Promise<unknown>;
   /** Only in edit mode. */
   onDelete?: () => Promise<void>;
   /** Used in messages, e.g. "education" → "Your education has been saved." */

@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { nowIso } from '@/db/client';
+import { deleteResumeItemsFor } from '@/db/repositories/resumeItemRepo';
 import type { EntryRepo } from '@/db/repositories/types';
 import type { Skill, SkillCategory, SkillInput, SkillLevel } from '@/types/skill';
 
@@ -56,9 +57,12 @@ async function updateSkill(db: SQLiteDatabase, id: number, input: SkillInput): P
   );
 }
 
-/** Skills cannot have attachments (FR-D1), so there is nothing else to clean up. */
+/** Deletes the skill and removes it from saved resumes. Skills have no attachments (FR-D1). */
 async function deleteSkill(db: SQLiteDatabase, id: number): Promise<void> {
-  await db.runAsync('DELETE FROM skills WHERE id = ?', [id]);
+  await db.withTransactionAsync(async () => {
+    await deleteResumeItemsFor(db, 'skill', id);
+    await db.runAsync('DELETE FROM skills WHERE id = ?', [id]);
+  });
 }
 
 export const skillRepo: EntryRepo<Skill, SkillInput> = {
