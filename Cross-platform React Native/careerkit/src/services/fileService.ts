@@ -2,6 +2,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import * as Sharing from 'expo-sharing';
+import { Platform } from 'react-native';
 
 import {
   ATTACHMENT_MIME_TYPES,
@@ -66,7 +67,11 @@ export function toFileUri(path: string): string {
 export async function pickDocument(): Promise<PickedFile | null> {
   const result = await DocumentPicker.getDocumentAsync({
     type: ATTACHMENT_MIME_TYPES,
-    copyToCacheDirectory: true,
+    // Android: keep the picker's own content:// link instead of letting it copy the file into a
+    // cache folder. In Expo Go that cache folder is outside our app's sandbox, so expo-file-system
+    // refuses to read it ("Missing READ permission"). We copy the file ourselves right after.
+    // iOS: the picker copies into our own sandbox cache, which works everywhere.
+    copyToCacheDirectory: Platform.OS !== 'android',
   });
   if (result.canceled) return null;
   const asset = result.assets[0];
@@ -216,5 +221,9 @@ export function isImage(mimeType: string | null): boolean {
 export function fileErrorMessage(e: unknown): string {
   if (e instanceof FileTooLargeError) return `Please choose a file smaller than ${MAX_FILE_MB} MB.`;
   if (e instanceof PermissionDeniedError) return `${e.message} You can allow it in your phone's Settings.`;
-  return 'Something went wrong with this file. Please try again.';
+  const generic = 'Something went wrong with this file. Please try again.';
+  // While developing, show the real error so problems are easy to find. Users never see this.
+  return __DEV__ && e instanceof Error ? `${generic}
+
+(Details: ${e.message})` : generic;
 }
