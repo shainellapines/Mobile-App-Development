@@ -568,7 +568,7 @@ Work top to bottom. Check items off as they are completed.
 - [x] 1.8 Resume Builder: selection screen, `ats_simple` HTML template, preview, export/share, saved versions (FR-R1–R6)
 
 ### Phase 2 — Differentiators
-- [ ] 2.1 Requirements Tracker CRUD + `StatusBadge` + auto status (FR-Q1, Q3, Q6)
+- [x] 2.1 Requirements Tracker CRUD + `StatusBadge` + auto status (FR-Q1, Q3, Q6)
 - [ ] 2.2 Smart Templates + suggested expiry (FR-Q2, Q4)
 - [ ] 2.3 Expiry notifications (FR-Q5)
 - [ ] 2.4 Application Tracker CRUD + status pipeline + linked resume (FR-A1–A4)

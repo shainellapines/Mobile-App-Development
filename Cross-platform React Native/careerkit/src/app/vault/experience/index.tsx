@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 
-import { VaultListScreen } from '@/components/VaultListScreen';
+import { EntryListScreen } from '@/components/EntryListScreen';
 import { experienceTypeLabel } from '@/constants/vault';
 import { useExperiences } from '@/hooks/useVaultEntries';
 import { formatDateRange } from '@/utils/dates';
@@ -10,7 +10,7 @@ export default function ExperienceListScreen() {
   const { items, loading } = useExperiences();
 
   return (
-    <VaultListScreen
+    <EntryListScreen
       items={items}
       loading={loading}
       describe={(e) => ({

@@ -1,4 +1,6 @@
+import { MAX_REMINDER_DAYS } from '@/constants/requirements';
 import type { ExperienceType } from '@/types/experience';
+import type { RequirementCategory } from '@/types/requirement';
 import type { SkillCategory, SkillLevel } from '@/types/skill';
 import { isEndBeforeStart } from '@/utils/dates';
 
@@ -183,5 +185,32 @@ export type ResumeFormValues = {
 export function validateResume(values: ResumeFormValues): FormErrors<ResumeFormValues> {
   const errors: FormErrors<ResumeFormValues> = {};
   if (values.title.trim() === '') errors.title = 'Give this resume a name, e.g. "Front-End Dev – Accenture"';
+  return errors;
+}
+
+/** Field values of the Requirement form. reminderDays is text while typing (e.g. "14"). */
+export type RequirementFormValues = {
+  name: string;
+  category: RequirementCategory;
+  referenceNo: string;
+  issueDate: string | null;
+  expiryDate: string | null;
+  notYetObtained: boolean;
+  reminderDays: string;
+  notes: string;
+};
+
+export function validateRequirement(values: RequirementFormValues): FormErrors<RequirementFormValues> {
+  const errors: FormErrors<RequirementFormValues> = {};
+
+  if (values.name.trim() === '') errors.name = 'Document name is required';
+  if (isEndBeforeStart(values.issueDate, values.expiryDate)) {
+    errors.expiryDate = 'Expiry date cannot be before the issue date';
+  }
+  const days = Number(values.reminderDays);
+  if (!/^\d+$/.test(values.reminderDays.trim()) || days > MAX_REMINDER_DAYS) {
+    errors.reminderDays = `Enter a whole number from 0 to ${MAX_REMINDER_DAYS}`;
+  }
+
   return errors;
 }

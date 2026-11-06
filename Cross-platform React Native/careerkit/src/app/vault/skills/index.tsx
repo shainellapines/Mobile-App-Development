@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 
-import { VaultListScreen } from '@/components/VaultListScreen';
+import { EntryListScreen } from '@/components/EntryListScreen';
 import { skillCategoryLabel, skillLevelLabel } from '@/constants/vault';
 import { useSkills } from '@/hooks/useVaultEntries';
 
@@ -9,7 +9,7 @@ export default function SkillListScreen() {
   const { items, loading } = useSkills();
 
   return (
-    <VaultListScreen
+    <EntryListScreen
       items={items}
       loading={loading}
       describe={(s) => ({

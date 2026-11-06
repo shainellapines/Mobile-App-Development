@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 
-import { VaultListScreen } from '@/components/VaultListScreen';
+import { EntryListScreen } from '@/components/EntryListScreen';
 import { useProjects } from '@/hooks/useVaultEntries';
 import { formatDateRange } from '@/utils/dates';
 
@@ -9,7 +9,7 @@ export default function ProjectListScreen() {
   const { items, loading } = useProjects();
 
   return (
-    <VaultListScreen
+    <EntryListScreen
       items={items}
       loading={loading}
       describe={(p) => ({

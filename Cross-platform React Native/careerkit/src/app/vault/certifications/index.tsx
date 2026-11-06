@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 
-import { VaultListScreen } from '@/components/VaultListScreen';
+import { EntryListScreen } from '@/components/EntryListScreen';
 import { useCertifications } from '@/hooks/useVaultEntries';
 import type { Certification } from '@/types/certification';
 import { formatDate } from '@/utils/dates';
@@ -18,7 +18,7 @@ export default function CertificationListScreen() {
   const { items, loading } = useCertifications();
 
   return (
-    <VaultListScreen
+    <EntryListScreen
       items={items}
       loading={loading}
       describe={(c) => ({

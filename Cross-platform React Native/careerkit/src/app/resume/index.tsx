@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 
-import { VaultListScreen } from '@/components/VaultListScreen';
+import { EntryListScreen } from '@/components/EntryListScreen';
 import { resumeTemplateLabel } from '@/constants/vault';
 import { useResumes } from '@/hooks/useResumes';
 import { formatDate } from '@/utils/dates';
@@ -10,7 +10,7 @@ export default function ResumeListScreen() {
   const { items, loading } = useResumes();
 
   return (
-    <VaultListScreen
+    <EntryListScreen
       items={items}
       loading={loading}
       describe={(r) => ({
