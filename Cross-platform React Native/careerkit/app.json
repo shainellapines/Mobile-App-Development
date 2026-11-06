@@ -34,7 +34,16 @@
         }
       ],
       "expo-sqlite",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CareerKit needs access to your photos so you can attach certificates and set a profile photo.",
+          "cameraPermission": "CareerKit needs the camera so you can take photos of your documents and certificates.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

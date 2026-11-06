@@ -3,6 +3,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import { nowIso } from '@/db/client';
 import { deleteAttachmentsFor } from '@/db/repositories/attachmentRepo';
 import type { EntryRepo } from '@/db/repositories/types';
+import { deleteStoredFiles } from '@/services/fileService';
 import type { Project, ProjectInput } from '@/types/project';
 
 type ProjectRow = {
@@ -88,12 +89,15 @@ async function updateProject(db: SQLiteDatabase, id: number, input: ProjectInput
   );
 }
 
-/** Deletes the project and its attachments in one transaction. */
+/** Deletes the record, its attachment rows (one transaction), then the attachment files. */
 async function deleteProject(db: SQLiteDatabase, id: number): Promise<void> {
+  let filePaths: string[] = [];
   await db.withTransactionAsync(async () => {
-    await deleteAttachmentsFor(db, 'project', id);
+    filePaths = await deleteAttachmentsFor(db, 'project', id);
     await db.runAsync('DELETE FROM projects WHERE id = ?', [id]);
   });
+  // Only after the DB change is saved: remove the physical files (FR-D3).
+  deleteStoredFiles(filePaths);
 }
 
 export const projectRepo: EntryRepo<Project, ProjectInput> = {

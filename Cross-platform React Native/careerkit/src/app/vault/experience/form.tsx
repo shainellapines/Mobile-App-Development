@@ -1,3 +1,4 @@
+import { AttachmentPicker } from '@/components/AttachmentPicker';
 import { Card } from '@/components/Card';
 import { DateField } from '@/components/DateField';
 import { EntryFormShell } from '@/components/EntryFormShell';
@@ -47,18 +48,20 @@ export default function ExperienceFormScreen() {
       title={isEdit ? 'Edit Experience' : 'Add Experience'}
       loading={loading}
       notFound={isEdit && !entry}>
-      <ExperienceForm initial={entry} onSave={save} onDelete={isEdit ? remove : undefined} />
+      <ExperienceForm initial={entry} ownerId={id} onSave={save} onDelete={isEdit ? remove : undefined} />
     </EntryFormShell>
   );
 }
 
 type FormProps = {
   initial: Experience | null;
+  /** The saved record's id (undefined while adding), used for attachments. */
+  ownerId: number | undefined;
   onSave: (input: ExperienceInput) => Promise<void>;
   onDelete?: () => Promise<void>;
 };
 
-function ExperienceForm({ initial, onSave, onDelete }: FormProps) {
+function ExperienceForm({ initial, ownerId, onSave, onDelete }: FormProps) {
   const { values, setField, errors, saving, handleSave, handleDelete } = useEntryForm({
     initialValues: toFormValues(initial),
     validate: validateExperience,
@@ -119,6 +122,8 @@ function ExperienceForm({ initial, onSave, onDelete }: FormProps) {
         />
         <FieldHint>Write one achievement per line — each line becomes a bullet on your resume.</FieldHint>
       </Card>
+
+      <AttachmentPicker ownerType="experience" ownerId={ownerId} />
 
       <FormActions label="experience" saving={saving} onSave={handleSave} onDelete={handleDelete} />
     </Screen>

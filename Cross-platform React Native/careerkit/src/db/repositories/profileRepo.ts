@@ -52,8 +52,8 @@ export async function saveProfile(db: SQLiteDatabase, input: ProfileInput): Prom
   await db.runAsync(
     `INSERT INTO profile (
        id, full_name, headline, email, phone, address, summary,
-       linkedin_url, portfolio_url, photo_uri, created_at, updated_at
-     ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       linkedin_url, portfolio_url, created_at, updated_at
+     ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        full_name = excluded.full_name,
        headline = excluded.headline,
@@ -63,7 +63,6 @@ export async function saveProfile(db: SQLiteDatabase, input: ProfileInput): Prom
        summary = excluded.summary,
        linkedin_url = excluded.linkedin_url,
        portfolio_url = excluded.portfolio_url,
-       photo_uri = excluded.photo_uri,
        updated_at = excluded.updated_at`,
     [
       input.fullName,
@@ -74,7 +73,6 @@ export async function saveProfile(db: SQLiteDatabase, input: ProfileInput): Prom
       input.summary,
       input.linkedinUrl,
       input.portfolioUrl,
-      input.photoUri,
       now,
       now,
     ]
@@ -83,4 +81,20 @@ export async function saveProfile(db: SQLiteDatabase, input: ProfileInput): Prom
   const saved = await getProfile(db);
   if (!saved) throw new Error('Profile was not saved');
   return saved;
+}
+
+/**
+ * Saves (or clears, with null) the profile photo path and returns the OLD path,
+ * so the caller can delete the old file. Works even before the profile form was ever saved:
+ * the row is created with an empty name (full_name defaults to '').
+ */
+export async function setProfilePhoto(db: SQLiteDatabase, path: string | null): Promise<string | null> {
+  const old = await db.getFirstAsync<{ photo_uri: string | null }>('SELECT photo_uri FROM profile WHERE id = 1');
+  const now = nowIso();
+  await db.runAsync(
+    `INSERT INTO profile (id, photo_uri, created_at, updated_at) VALUES (1, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET photo_uri = excluded.photo_uri, updated_at = excluded.updated_at`,
+    [path, now, now]
+  );
+  return old?.photo_uri ?? null;
 }

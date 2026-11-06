@@ -1,3 +1,4 @@
+import { AttachmentPicker } from '@/components/AttachmentPicker';
 import { Card } from '@/components/Card';
 import { DateField } from '@/components/DateField';
 import { EntryFormShell } from '@/components/EntryFormShell';
@@ -43,18 +44,20 @@ export default function EducationFormScreen() {
       title={isEdit ? 'Edit Education' : 'Add Education'}
       loading={loading}
       notFound={isEdit && !entry}>
-      <EducationForm initial={entry} onSave={save} onDelete={isEdit ? remove : undefined} />
+      <EducationForm initial={entry} ownerId={id} onSave={save} onDelete={isEdit ? remove : undefined} />
     </EntryFormShell>
   );
 }
 
 type FormProps = {
   initial: Education | null;
+  /** The saved record's id (undefined while adding), used for attachments. */
+  ownerId: number | undefined;
   onSave: (input: EducationInput) => Promise<void>;
   onDelete?: () => Promise<void>;
 };
 
-function EducationForm({ initial, onSave, onDelete }: FormProps) {
+function EducationForm({ initial, ownerId, onSave, onDelete }: FormProps) {
   const { values, setField, errors, saving, handleSave, handleDelete } = useEntryForm({
     initialValues: toFormValues(initial),
     validate: validateEducation,
@@ -114,6 +117,8 @@ function EducationForm({ initial, onSave, onDelete }: FormProps) {
         />
         <FieldHint>Optional. One item per line.</FieldHint>
       </Card>
+
+      <AttachmentPicker ownerType="education" ownerId={ownerId} />
 
       <FormActions label="education" saving={saving} onSave={handleSave} onDelete={handleDelete} />
     </Screen>

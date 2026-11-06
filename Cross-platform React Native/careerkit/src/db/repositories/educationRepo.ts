@@ -3,6 +3,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import { nowIso } from '@/db/client';
 import { deleteAttachmentsFor } from '@/db/repositories/attachmentRepo';
 import type { EntryRepo } from '@/db/repositories/types';
+import { deleteStoredFiles } from '@/services/fileService';
 import type { Education, EducationInput } from '@/types/education';
 
 type EducationRow = {
@@ -65,12 +66,15 @@ async function updateEducation(db: SQLiteDatabase, id: number, input: EducationI
   );
 }
 
-/** Deletes the entry and its attachments in one transaction. */
+/** Deletes the record, its attachment rows (one transaction), then the attachment files. */
 async function deleteEducation(db: SQLiteDatabase, id: number): Promise<void> {
+  let filePaths: string[] = [];
   await db.withTransactionAsync(async () => {
-    await deleteAttachmentsFor(db, 'education', id);
+    filePaths = await deleteAttachmentsFor(db, 'education', id);
     await db.runAsync('DELETE FROM education WHERE id = ?', [id]);
   });
+  // Only after the DB change is saved: remove the physical files (FR-D3).
+  deleteStoredFiles(filePaths);
 }
 
 export const educationRepo: EntryRepo<Education, EducationInput> = {

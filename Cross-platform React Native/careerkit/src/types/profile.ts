@@ -14,5 +14,9 @@ export type Profile = {
   updatedAt: string;
 };
 
-/** What the Profile form sends to the repository (the DB fills in id and timestamps). */
-export type ProfileInput = Omit<Profile, 'id' | 'createdAt' | 'updatedAt'>;
+/**
+ * What the Profile form sends to the repository (the DB fills in id and timestamps).
+ * The photo is NOT part of the form: it is saved on its own as soon as it is picked
+ * (see setProfilePhoto), so pressing "Save profile" can never overwrite a newer photo.
+ */
+export type ProfileInput = Omit<Profile, 'id' | 'createdAt' | 'updatedAt' | 'photoUri'>;

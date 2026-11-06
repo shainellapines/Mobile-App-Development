@@ -2,7 +2,13 @@ import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
 
-import { getProfile, saveProfile } from '@/db/repositories/profileRepo';
+import { getProfile, saveProfile, setProfilePhoto } from '@/db/repositories/profileRepo';
+import {
+  deleteStoredFiles,
+  pickFrom,
+  saveToAttachments,
+  type AttachmentSource,
+} from '@/services/fileService';
 import type { Profile, ProfileInput } from '@/types/profile';
 
 /**
@@ -42,5 +48,28 @@ export function useProfile() {
     [db]
   );
 
-  return { profile, loading, save, refresh };
+  /**
+   * Picks a square photo, copies it into the app, saves it right away, then deletes the old photo.
+   * Returns false if the user cancelled. Throws on errors (too large, no permission).
+   */
+  const changePhoto = useCallback(
+    async (source: AttachmentSource): Promise<boolean> => {
+      const picked = await pickFrom(source, true);
+      if (!picked) return false;
+      const stored = await saveToAttachments(picked);
+      const oldPath = await setProfilePhoto(db, stored.path);
+      if (oldPath) deleteStoredFiles([oldPath]);
+      await refresh();
+      return true;
+    },
+    [db, refresh]
+  );
+
+  const removePhoto = useCallback(async () => {
+    const oldPath = await setProfilePhoto(db, null);
+    if (oldPath) deleteStoredFiles([oldPath]);
+    await refresh();
+  }, [db, refresh]);
+
+  return { profile, loading, save, refresh, changePhoto, removePhoto };
 }

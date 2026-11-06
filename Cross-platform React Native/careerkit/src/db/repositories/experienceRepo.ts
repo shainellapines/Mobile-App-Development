@@ -3,6 +3,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import { nowIso } from '@/db/client';
 import { deleteAttachmentsFor } from '@/db/repositories/attachmentRepo';
 import type { EntryRepo } from '@/db/repositories/types';
+import { deleteStoredFiles } from '@/services/fileService';
 import type { Experience, ExperienceInput, ExperienceType } from '@/types/experience';
 
 /** The row exactly as SQLite returns it (snake_case columns). */
@@ -98,12 +99,15 @@ export async function updateExperience(
   );
 }
 
-/** Deletes an experience together with its attachments, in one transaction (all or nothing). */
+/** Deletes the record, its attachment rows (one transaction), then the attachment files. */
 export async function deleteExperience(db: SQLiteDatabase, id: number): Promise<void> {
+  let filePaths: string[] = [];
   await db.withTransactionAsync(async () => {
-    await deleteAttachmentsFor(db, 'experience', id);
+    filePaths = await deleteAttachmentsFor(db, 'experience', id);
     await db.runAsync('DELETE FROM experiences WHERE id = ?', [id]);
   });
+  // Only after the DB change is saved: remove the physical files (FR-D3).
+  deleteStoredFiles(filePaths);
 }
 
 /** All operations in one object, so the generic hooks can use this repository. */

@@ -1,3 +1,4 @@
+import { AttachmentPicker } from '@/components/AttachmentPicker';
 import { Card } from '@/components/Card';
 import { DateField } from '@/components/DateField';
 import { EntryFormShell } from '@/components/EntryFormShell';
@@ -41,18 +42,20 @@ export default function CertificationFormScreen() {
       title={isEdit ? 'Edit Certification' : 'Add Certification'}
       loading={loading}
       notFound={isEdit && !entry}>
-      <CertificationForm initial={entry} onSave={save} onDelete={isEdit ? remove : undefined} />
+      <CertificationForm initial={entry} ownerId={id} onSave={save} onDelete={isEdit ? remove : undefined} />
     </EntryFormShell>
   );
 }
 
 type FormProps = {
   initial: Certification | null;
+  /** The saved record's id (undefined while adding), used for attachments. */
+  ownerId: number | undefined;
   onSave: (input: CertificationInput) => Promise<void>;
   onDelete?: () => Promise<void>;
 };
 
-function CertificationForm({ initial, onSave, onDelete }: FormProps) {
+function CertificationForm({ initial, ownerId, onSave, onDelete }: FormProps) {
   const { values, setField, errors, saving, handleSave, handleDelete } = useEntryForm({
     initialValues: toFormValues(initial),
     validate: validateCertification,
@@ -101,6 +104,8 @@ function CertificationForm({ initial, onSave, onDelete }: FormProps) {
         />
         <FieldHint>Leave the expiry date empty if it does not expire.</FieldHint>
       </Card>
+
+      <AttachmentPicker ownerType="certification" ownerId={ownerId} />
 
       <FormActions label="certification" saving={saving} onSave={handleSave} onDelete={handleDelete} />
     </Screen>

@@ -1,3 +1,4 @@
+import { AttachmentPicker } from '@/components/AttachmentPicker';
 import { Card } from '@/components/Card';
 import { DateField } from '@/components/DateField';
 import { EntryFormShell } from '@/components/EntryFormShell';
@@ -54,18 +55,20 @@ export default function ProjectFormScreen() {
       title={isEdit ? 'Edit Project' : 'Add Project'}
       loading={loading}
       notFound={isEdit && !entry}>
-      <ProjectForm initial={entry} onSave={save} onDelete={isEdit ? remove : undefined} />
+      <ProjectForm initial={entry} ownerId={id} onSave={save} onDelete={isEdit ? remove : undefined} />
     </EntryFormShell>
   );
 }
 
 type FormProps = {
   initial: Project | null;
+  /** The saved record's id (undefined while adding), used for attachments. */
+  ownerId: number | undefined;
   onSave: (input: ProjectInput) => Promise<void>;
   onDelete?: () => Promise<void>;
 };
 
-function ProjectForm({ initial, onSave, onDelete }: FormProps) {
+function ProjectForm({ initial, ownerId, onSave, onDelete }: FormProps) {
   const { values, setField, errors, saving, handleSave, handleDelete } = useEntryForm({
     initialValues: toFormValues(initial),
     validate: validateProject,
@@ -133,6 +136,8 @@ function ProjectForm({ initial, onSave, onDelete }: FormProps) {
         />
         <FieldHint>One point per line — each line becomes a bullet on your resume.</FieldHint>
       </Card>
+
+      <AttachmentPicker ownerType="project" ownerId={ownerId} />
 
       <FormActions label="project" saving={saving} onSave={handleSave} onDelete={handleDelete} />
     </Screen>

@@ -3,6 +3,7 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import { nowIso } from '@/db/client';
 import { deleteAttachmentsFor } from '@/db/repositories/attachmentRepo';
 import type { EntryRepo } from '@/db/repositories/types';
+import { deleteStoredFiles } from '@/services/fileService';
 import type { Certification, CertificationInput } from '@/types/certification';
 
 type CertificationRow = {
@@ -67,12 +68,15 @@ async function updateCertification(
   );
 }
 
-/** Deletes the certification and its attachments in one transaction. */
+/** Deletes the record, its attachment rows (one transaction), then the attachment files. */
 async function deleteCertification(db: SQLiteDatabase, id: number): Promise<void> {
+  let filePaths: string[] = [];
   await db.withTransactionAsync(async () => {
-    await deleteAttachmentsFor(db, 'certification', id);
+    filePaths = await deleteAttachmentsFor(db, 'certification', id);
     await db.runAsync('DELETE FROM certifications WHERE id = ?', [id]);
   });
+  // Only after the DB change is saved: remove the physical files (FR-D3).
+  deleteStoredFiles(filePaths);
 }
 
 export const certificationRepo: EntryRepo<Certification, CertificationInput> = {

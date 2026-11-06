@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { ProfilePhotoPicker } from '@/components/ProfilePhotoPicker';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { Colors, FontSize, FontWeight } from '@/constants/theme';
@@ -41,7 +42,7 @@ function toFormValues(p: Profile): ProfileFormValues {
  * This outer part only waits for the saved profile to load, then shows the form.
  */
 export default function ProfileScreen() {
-  const { profile, loading, save } = useProfile();
+  const { profile, loading, save, changePhoto, removePhoto } = useProfile();
 
   if (loading) {
     return (
@@ -51,15 +52,26 @@ export default function ProfileScreen() {
     );
   }
 
-  return <ProfileForm initial={profile} onSave={save} />;
+  return (
+    <ProfileForm initial={profile} onSave={save}>
+      {/* The photo uses the LIVE profile, so it updates as soon as a new photo is saved. */}
+      <ProfilePhotoPicker
+        photoPath={profile?.photoUri ?? null}
+        onChange={changePhoto}
+        onRemove={removePhoto}
+      />
+    </ProfileForm>
+  );
 }
 
 type ProfileFormProps = {
   initial: Profile | null;
   onSave: (input: ProfileInput) => Promise<Profile>;
+  /** Shown at the top of the form (the profile photo picker). */
+  children: ReactNode;
 };
 
-function ProfileForm({ initial, onSave }: ProfileFormProps) {
+function ProfileForm({ initial, onSave, children }: ProfileFormProps) {
   // Starting values are set once, when the form first appears.
   const [values, setValues] = useState<ProfileFormValues>(() =>
     initial ? toFormValues(initial) : EMPTY_FORM
@@ -93,7 +105,6 @@ function ProfileForm({ initial, onSave }: ProfileFormProps) {
         summary: emptyToNull(values.summary),
         linkedinUrl: emptyToNull(values.linkedinUrl),
         portfolioUrl: emptyToNull(values.portfolioUrl),
-        photoUri: initial?.photoUri ?? null, // photo picker arrives in step 1.7
       });
       Alert.alert('Saved', 'Your profile has been updated.');
       router.back();
@@ -107,6 +118,8 @@ function ProfileForm({ initial, onSave }: ProfileFormProps) {
 
   return (
     <Screen scroll>
+      <Card>{children}</Card>
+
       <Card>
         <Text style={styles.section}>Basic info</Text>
         <TextField
