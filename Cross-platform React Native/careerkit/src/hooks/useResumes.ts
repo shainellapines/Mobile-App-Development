@@ -4,9 +4,10 @@ import { useCallback } from 'react';
 import { getProfile } from '@/db/repositories/profileRepo';
 import { duplicateResume, getResumeContent, resumeRepo, setResumePdf } from '@/db/repositories/resumeRepo';
 import { useEntry, useEntryList } from '@/hooks/useVaultEntries';
-import { openStoredFile } from '@/services/fileService';
+import { openStoredFile, readImageAsDataUri } from '@/services/fileService';
 import { deleteResumePdfs, exportResumePdf, shareResumePdf } from '@/services/pdfService';
 import { buildAtsSimpleHtml } from '@/templates/resume/atsSimple';
+import { buildModernHtml } from '@/templates/resume/modern';
 import type { Resume, ResumeContent } from '@/types/resume';
 
 /** Saved resume versions, most recently edited first (FR-R5). */
@@ -16,12 +17,16 @@ export const useResumes = () => useEntryList(resumeRepo);
 export const useResume = (id: number | undefined) => useEntry(id, resumeRepo);
 
 /**
- * Picks the HTML template for a resume. Only "ats_simple" exists in Phase 1;
- * "modern" (step 3.2) will get its own builder function here.
+ * Picks the HTML template for a resume (FR-R3).
+ * Modern also shows the profile photo, read from the phone and put inside the HTML.
  */
-function buildHtml(resume: Resume, content: ResumeContent): string {
+async function buildHtml(resume: Resume, content: ResumeContent): Promise<string> {
   switch (resume.template) {
-    case 'modern': // not built yet (step 3.2): fall back to ATS Simple
+    case 'modern': {
+      const photoPath = content.profile?.photoUri;
+      const photo = photoPath ? await readImageAsDataUri(photoPath) : null;
+      return buildModernHtml(content, photo);
+    }
     case 'ats_simple':
     default:
       return buildAtsSimpleHtml(content);
@@ -40,7 +45,7 @@ export function useResumeActions(resume: Resume | null) {
   const exportPdf = useCallback(async (): Promise<string> => {
     if (!resume) throw new Error('No resume loaded');
     const content = await getResumeContent(db, resume);
-    const path = await exportResumePdf(resume.id, content.profile?.fullName ?? '', buildHtml(resume, content));
+    const path = await exportResumePdf(resume.id, content.profile?.fullName ?? '', await buildHtml(resume, content));
     await setResumePdf(db, resume.id, path);
     return path;
   }, [db, resume]);

@@ -10,7 +10,7 @@ import { ResumeSectionPicker } from '@/components/ResumeSectionPicker';
 import { Screen } from '@/components/Screen';
 import { Select } from '@/components/Select';
 import { TextField } from '@/components/TextField';
-import { RESUME_TEMPLATE_OPTIONS, skillCategoryLabel } from '@/constants/vault';
+import { RESUME_TEMPLATE_HINTS, RESUME_TEMPLATE_OPTIONS, skillCategoryLabel } from '@/constants/vault';
 import { useResume } from '@/hooks/useResumes';
 import {
   useCertifications,
@@ -167,9 +167,7 @@ function ResumeBuilderForm({ initial, isEdit, vault, onSave }: FormProps) {
         />
         <FieldHint>The target role appears under your name. Leave it empty to use your profile headline.</FieldHint>
         <Select label="Template" options={RESUME_TEMPLATE_OPTIONS} value={template} onChange={setTemplate} />
-        <FieldHint>
-          ATS Simple: one column with standard headings, easy for hiring software to read. More templates later.
-        </FieldHint>
+        <FieldHint>{RESUME_TEMPLATE_HINTS[template]}</FieldHint>
       </Card>
 
       <Card>

@@ -1,8 +1,8 @@
 import { skillCategoryLabel } from '@/constants/vault';
 import type { ResumeContent } from '@/types/resume';
-import type { SkillCategory } from '@/types/skill';
 import { formatResumeDate, formatResumeDateRange } from '@/utils/dates';
-import { escapeHtml, toBulletLines } from '@/utils/html';
+import { bullets, groupSkills, joinParts } from '@/templates/resume/shared';
+import { escapeHtml } from '@/utils/html';
 
 /**
  * "ATS Simple" resume template (FR-R6).
@@ -12,20 +12,6 @@ import { escapeHtml, toBulletLines } from '@/utils/html';
  * - standard headings: Summary, Education, Experience, Projects, Skills, Certifications,
  * - real text only (no text inside images), a standard font, and A4 paper.
  */
-
-/** Escapes and joins the non-empty parts with a separator. */
-function joinParts(parts: (string | null | undefined)[], separator: string): string {
-  return parts
-    .filter((p): p is string => Boolean(p && p.trim()))
-    .map(escapeHtml)
-    .join(separator);
-}
-
-function bullets(text: string | null): string {
-  const lines = toBulletLines(text);
-  if (lines.length === 0) return '';
-  return `<ul>${lines.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`;
-}
 
 /** One entry: bold title + dates on the first line, details below. */
 function entry(title: string, dates: string, subtitle: string, body: string): string {
@@ -84,11 +70,7 @@ export function buildAtsSimpleHtml(c: ResumeContent): string {
     .join('');
 
   // Skills are grouped by category on one line each: "Technical: React, TypeScript".
-  const skillGroups = new Map<SkillCategory, string[]>();
-  for (const s of c.skills) {
-    skillGroups.set(s.category, [...(skillGroups.get(s.category) ?? []), s.name]);
-  }
-  const skills = [...skillGroups.entries()]
+  const skills = groupSkills(c.skills)
     .map(([category, names]) => `<p><strong>${escapeHtml(skillCategoryLabel(category))}:</strong> ${joinParts(names, ', ')}</p>`)
     .join('');
 

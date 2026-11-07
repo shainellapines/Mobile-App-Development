@@ -577,7 +577,7 @@ Work top to bottom. Check items off as they are completed.
 
 ### Phase 3 — Polish & Stretch
 - [x] 3.1 App Lock with PIN + biometrics; Reset all data (FR-L1–L3)
-- [ ] 3.2 `modern` resume template
+- [x] 3.2 `modern` resume template
 - [ ] 3.3 Search/filters polish (FR-V5), interview reminders (FR-A5), OJT DTR PDF (FR-O5)
 - [ ] 3.4 UI polish pass: consistency check on every screen, loading/success states, app icon & splash screen
 - [ ] 3.5 Seed **demo data** script (a sample student profile) for the presentation video

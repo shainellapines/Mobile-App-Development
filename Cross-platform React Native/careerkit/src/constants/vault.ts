@@ -40,10 +40,18 @@ export function skillLevelLabel(level: SkillLevel | null): string {
   return SKILL_LEVEL_OPTIONS.find((o) => o.value === level)?.label ?? '';
 }
 
-/** Resume templates the user can pick. "modern" is added in Phase 3 (step 3.2). */
+/** Resume templates the user can pick (FR-R3). */
 export const RESUME_TEMPLATE_OPTIONS: readonly SelectOption<ResumeTemplate>[] = [
   { value: 'ats_simple', label: 'ATS Simple' },
+  { value: 'modern', label: 'Modern' },
 ];
+
+/** One-line explanation shown under the template picker. */
+export const RESUME_TEMPLATE_HINTS: Record<ResumeTemplate, string> = {
+  ats_simple: 'ATS Simple: one column, black and white, standard headings. Best for online job portals.',
+  modern:
+    'Modern: blue header with your profile photo, teal headings and skill tags. Best for emailing or handing to a person.',
+};
 
 export function resumeTemplateLabel(template: ResumeTemplate): string {
   return template === 'modern' ? 'Modern' : 'ATS Simple';

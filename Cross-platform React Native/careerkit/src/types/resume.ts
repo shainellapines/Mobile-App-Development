@@ -5,7 +5,7 @@ import type { Profile } from '@/types/profile';
 import type { Project } from '@/types/project';
 import type { Skill } from '@/types/skill';
 
-/** 'modern' is added in Phase 3 (step 3.2). */
+/** Resume designs (FR-R3): ATS Simple (Phase 1) and Modern (Phase 3). */
 export type ResumeTemplate = 'ats_simple' | 'modern';
 
 /** Which vault table a resume item points to (resume_items.item_type). */

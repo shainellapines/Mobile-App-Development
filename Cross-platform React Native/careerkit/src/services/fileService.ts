@@ -237,3 +237,20 @@ export function deleteAllAttachments(): void {
     console.warn('[files] could not delete attachments folder', e);
   }
 }
+
+/**
+ * Reads a stored image as a "data:image/jpeg;base64,..." text, so it can be placed INSIDE
+ * an HTML page (used for the photo on the Modern resume). Returns null if it cannot be read.
+ */
+export async function readImageAsDataUri(path: string): Promise<string | null> {
+  try {
+    const file = new File(Paths.document, path);
+    if (!file.exists) return null;
+    const lower = path.toLowerCase();
+    const mime = lower.endsWith('.png') ? 'image/png' : lower.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+    return `data:${mime};base64,${await file.base64()}`;
+  } catch (e) {
+    console.warn('[files] could not read image', path, e);
+    return null;
+  }
+}
