@@ -2,9 +2,14 @@ import * as Notifications from 'expo-notifications';
 import { AndroidImportance } from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import { REMINDER_CHANNEL_ID, REMINDER_CHANNEL_NAME } from '@/constants/notifications';
+import {
+  APPLICATION_CHANNEL_ID,
+  APPLICATION_CHANNEL_NAME,
+  REMINDER_CHANNEL_ID,
+  REMINDER_CHANNEL_NAME,
+} from '@/constants/notifications';
 import { formatDate } from '@/utils/dates';
-import { daysLeftText, reminderFireDate } from '@/utils/reminders';
+import { daysLeftText, nextStepReminderDate, reminderFireDate } from '@/utils/reminders';
 
 /**
  * notificationService: the only place that talks to expo-notifications (Section 9).
@@ -29,6 +34,10 @@ export async function initNotifications(): Promise<void> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(REMINDER_CHANNEL_ID, {
       name: REMINDER_CHANNEL_NAME,
+      importance: AndroidImportance.HIGH,
+    });
+    await Notifications.setNotificationChannelAsync(APPLICATION_CHANNEL_ID, {
+      name: APPLICATION_CHANNEL_NAME,
       importance: AndroidImportance.HIGH,
     });
   }
@@ -70,6 +79,36 @@ export async function scheduleExpiryReminder(doc: {
       type: Notifications.SchedulableTriggerInputTypes.DATE,
       date: fireDate,
       channelId: REMINDER_CHANNEL_ID,
+    },
+  });
+  return { kind: 'scheduled', notificationId, fireDate };
+}
+
+/**
+ * Schedules the reminder for an application's next step, e.g. an interview (FR-A5).
+ * Closed applications (rejected / withdrawn) get no reminder.
+ */
+export async function scheduleNextStepReminder(app: {
+  applicationId: number;
+  company: string;
+  position: string;
+  nextStepDate: string | null;
+  isClosed: boolean;
+}): Promise<ReminderResult> {
+  const fireDate = app.isClosed ? null : nextStepReminderDate(app.nextStepDate);
+  if (!fireDate || !app.nextStepDate) return { kind: 'not_needed' };
+  if (!(await hasPermission())) return { kind: 'no_permission' };
+
+  const notificationId = await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `${app.company}: next step ${daysLeftText(app.nextStepDate, fireDate)}`,
+      body: `${app.position} — ${formatDate(app.nextStepDate)}. Review your resume and notes in CareerKit.`,
+      data: { applicationId: app.applicationId },
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: fireDate,
+      channelId: APPLICATION_CHANNEL_ID,
     },
   });
   return { kind: 'scheduled', notificationId, fireDate };

@@ -10,13 +10,13 @@ import { Screen } from '@/components/Screen';
 import { Select, type SelectOption } from '@/components/Select';
 import { TextField } from '@/components/TextField';
 import { APPLICATION_CHANNEL_OPTIONS, APPLICATION_STATUS_OPTIONS } from '@/constants/applications';
-import { useApplication } from '@/hooks/useApplications';
+import { useApplication, type ApplicationSaveResult } from '@/hooks/useApplications';
 import { useEntryForm } from '@/hooks/useEntryForm';
 import { useResumes } from '@/hooks/useResumes';
 import { useIdParam } from '@/hooks/useVaultEntries';
 import type { Application, ApplicationInput } from '@/types/application';
 import type { Resume } from '@/types/resume';
-import { toIsoDate } from '@/utils/dates';
+import { formatDate, toIsoDate } from '@/utils/dates';
 import { emptyToNull, validateApplication, type ApplicationFormValues } from '@/utils/validators';
 
 function toFormValues(a: Application | null): ApplicationFormValues {
@@ -45,6 +45,18 @@ function toInput(v: ApplicationFormValues): ApplicationInput {
     nextStepDate: v.nextStepDate,
     notes: emptyToNull(v.notes),
   };
+}
+
+/** The "Saved" message also says when the next-step reminder will arrive (FR-A5). */
+function saveMessage({ reminder }: ApplicationSaveResult): string {
+  switch (reminder.kind) {
+    case 'scheduled':
+      return `Saved. We'll remind you on ${formatDate(toIsoDate(reminder.fireDate))} about the next step.`;
+    case 'no_permission':
+      return "Saved. Reminders are off — allow notifications for this app in your phone's Settings.";
+    default:
+      return 'Your application has been saved.';
+  }
 }
 
 /** Add / Edit Application (FR-A1). /applications/form = add, ?id=3 = edit. */
@@ -79,7 +91,7 @@ export default function ApplicationFormScreen() {
 type FormProps = {
   initial: Application | null;
   resumes: Resume[];
-  onSave: (input: ApplicationInput) => Promise<unknown>;
+  onSave: (input: ApplicationInput) => Promise<ApplicationSaveResult>;
   onDelete?: () => Promise<void>;
 };
 
@@ -91,6 +103,7 @@ function ApplicationForm({ initial, resumes, onSave, onDelete }: FormProps) {
     onSave,
     onDelete,
     label: 'application',
+    successMessage: saveMessage,
   });
 
   // One chip per saved resume version, plus "None".
@@ -138,6 +151,7 @@ function ApplicationForm({ initial, resumes, onSave, onDelete }: FormProps) {
           error={errors.nextStepDate}
           clearable
         />
+        <FieldHint>{"We'll remind you the day before at 9:00 AM (no reminder once rejected or withdrawn)."}</FieldHint>
         <TextField
           label="Salary offer"
           placeholder="e.g. ₱25,000 / month"

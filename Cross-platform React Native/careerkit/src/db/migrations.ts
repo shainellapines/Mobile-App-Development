@@ -197,4 +197,12 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    version: 2,
+    description: 'Interview / next-step reminders (FR-A5)',
+    sql: `
+      -- Id of the scheduled local notification for applications.next_step_date (NULL = none).
+      ALTER TABLE applications ADD COLUMN notification_id TEXT;
+    `,
+  },
 ];

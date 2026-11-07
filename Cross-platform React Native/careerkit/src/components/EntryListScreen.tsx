@@ -119,6 +119,12 @@ export function EntryListScreen<T extends { id: number }>({
                 clearButtonMode="while-editing"
               />
               {filters}
+              {filtered.length !== items.length ? (
+                // FR-V5: say clearly that the list is filtered, so nothing looks "lost".
+                <Text style={styles.resultCount} accessibilityLiveRegion="polite">
+                  {`Showing ${filtered.length} of ${items.length}`}
+                </Text>
+              ) : null}
             </View>
           }
           ListEmptyComponent={<Text style={styles.noMatch}>No entries match your search or filters.</Text>}
@@ -177,6 +183,10 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   meta: {
+    fontSize: FontSize.xs,
+    color: Colors.mutedText,
+  },
+  resultCount: {
     fontSize: FontSize.xs,
     color: Colors.mutedText,
   },

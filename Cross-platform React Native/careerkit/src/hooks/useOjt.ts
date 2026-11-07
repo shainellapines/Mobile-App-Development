@@ -3,9 +3,13 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
 
 import { getOjtInfo, ojtLogRepo, saveOjtInfo } from '@/db/repositories/ojtRepo';
+import { getProfile } from '@/db/repositories/profileRepo';
 import { ojtRequirementRepo, setOjtRequirementDone } from '@/db/repositories/ojtRequirementRepo';
 import { useEntry, useEntryList } from '@/hooks/useVaultEntries';
+import { exportDtrPdf, shareStoredPdf } from '@/services/pdfService';
+import { buildDtrHtml } from '@/templates/dtr';
 import type { OjtInfo, OjtInfoInput } from '@/types/ojt';
+import { computeOjtProgress } from '@/utils/ojtProgress';
 
 /**
  * The OJT setup (single row). info is null until the user sets up their OJT.
@@ -65,3 +69,28 @@ export function useOjtRequirements() {
 }
 
 export const useOjtRequirement = (id: number | undefined) => useEntry(id, ojtRequirementRepo);
+
+/**
+ * DTR PDF export (FR-O5): reads the setup, all logs and the trainee's name,
+ * builds the HTML table, prints it to PDF, then opens the Share sheet.
+ * Throws on failure so the screen can show a message.
+ */
+export function useDtrExport() {
+  const db = useSQLiteContext();
+
+  return useCallback(async () => {
+    const [info, logs, profile] = await Promise.all([getOjtInfo(db), ojtLogRepo.list(db), getProfile(db)]);
+    if (!info) throw new Error('OJT is not set up');
+
+    const oldestFirst = [...logs].reverse(); // the list is newest first; a DTR reads oldest first
+    const traineeName = profile?.fullName.trim() ?? '';
+    const html = buildDtrHtml({
+      traineeName,
+      info,
+      logs: oldestFirst,
+      progress: computeOjtProgress(info.requiredHours, logs),
+    });
+    const path = await exportDtrPdf(traineeName || 'OJT', html);
+    await shareStoredPdf(path, 'OJT Daily Time Record');
+  }, [db]);
+}

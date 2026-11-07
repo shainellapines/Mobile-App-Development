@@ -1,11 +1,11 @@
 import { addDays, differenceInCalendarDays, endOfDay, set, subDays } from 'date-fns';
 
-import { REMINDER_HOUR } from '@/constants/notifications';
+import { NEXT_STEP_MORNING_HOUR, REMINDER_HOUR } from '@/constants/notifications';
 import { parseIsoDate } from '@/utils/dates';
 
-/** Today (or another day) at REMINDER_HOUR:00:00. */
-function atReminderHour(day: Date): Date {
-  return set(day, { hours: REMINDER_HOUR, minutes: 0, seconds: 0, milliseconds: 0 });
+/** A day at hour:00:00 (default REMINDER_HOUR). */
+function atReminderHour(day: Date, hour: number = REMINDER_HOUR): Date {
+  return set(day, { hours: hour, minutes: 0, seconds: 0, milliseconds: 0 });
 }
 
 /**
@@ -42,4 +42,20 @@ export function daysLeftText(expiryDate: string, fireDate: Date): string {
   if (days <= 0) return 'today';
   if (days === 1) return 'tomorrow';
   return `in ${days} days`;
+}
+
+/**
+ * When should the interview / next-step reminder go off? (FR-A5) PURE function.
+ * - Normally: the DAY BEFORE, at 9:00 AM, so there is time to prepare.
+ * - If that has passed (e.g. the interview was booked for tomorrow afternoon, and it is already
+ *   evening), remind on the day itself at 7:00 AM instead.
+ * - null when the date is missing or both moments have passed.
+ */
+export function nextStepReminderDate(nextStepDate: string | null, now: Date = new Date()): Date | null {
+  const day = parseIsoDate(nextStepDate);
+  if (!day) return null;
+  const dayBefore = atReminderHour(subDays(day, 1));
+  if (dayBefore > now) return dayBefore;
+  const morningOf = atReminderHour(day, NEXT_STEP_MORNING_HOUR);
+  return morningOf > now ? morningOf : null;
 }

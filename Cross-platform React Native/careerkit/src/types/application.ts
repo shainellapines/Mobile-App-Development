@@ -18,8 +18,13 @@ export type Application = {
   /** Date of the next step, e.g. the interview. */
   nextStepDate: string | null;
   notes: string | null;
+  /** Id of the scheduled next-step reminder (FR-A5); managed by the reminder code, not the form. */
+  notificationId: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
-export type ApplicationInput = Omit<Application, 'id' | 'createdAt' | 'updatedAt' | 'resumeTitle'>;
+export type ApplicationInput = Omit<
+  Application,
+  'id' | 'createdAt' | 'updatedAt' | 'resumeTitle' | 'notificationId'
+>;

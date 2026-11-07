@@ -293,6 +293,7 @@ CREATE TABLE IF NOT EXISTS applications (
   salary_offer TEXT,
   next_step_date TEXT,         -- e.g., interview date
   notes TEXT,
+  notification_id TEXT,        -- added in migration v2: scheduled next-step reminder (FR-A5)
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -578,7 +579,7 @@ Work top to bottom. Check items off as they are completed.
 ### Phase 3 — Polish & Stretch
 - [x] 3.1 App Lock with PIN + biometrics; Reset all data (FR-L1–L3)
 - [x] 3.2 `modern` resume template
-- [ ] 3.3 Search/filters polish (FR-V5), interview reminders (FR-A5), OJT DTR PDF (FR-O5)
+- [x] 3.3 Search/filters polish (FR-V5), interview reminders (FR-A5), OJT DTR PDF (FR-O5)
 - [ ] 3.4 UI polish pass: consistency check on every screen, loading/success states, app icon & splash screen
 - [ ] 3.5 Seed **demo data** script (a sample student profile) for the presentation video
 - [ ] 3.6 Final test on a real Android **and** iOS device (or emulator)

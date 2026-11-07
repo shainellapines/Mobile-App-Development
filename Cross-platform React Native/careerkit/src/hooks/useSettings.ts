@@ -14,7 +14,7 @@ import {
 } from '@/services/authService';
 import { deleteAllAttachments } from '@/services/fileService';
 import { cancelAllReminders } from '@/services/notificationService';
-import { deleteAllResumePdfs } from '@/services/pdfService';
+import { deleteAllPdfs } from '@/services/pdfService';
 
 type SettingsState = {
   lockEnabled: boolean;
@@ -63,7 +63,7 @@ export function useSettings() {
   const resetAllData = useCallback(async () => {
     await clearAllTables(db);
     deleteAllAttachments();
-    deleteAllResumePdfs();
+    deleteAllPdfs();
     await cancelAllReminders();
     await disableLock();
     await refresh();

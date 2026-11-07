@@ -5,7 +5,7 @@ import { getProfile } from '@/db/repositories/profileRepo';
 import { duplicateResume, getResumeContent, resumeRepo, setResumePdf } from '@/db/repositories/resumeRepo';
 import { useEntry, useEntryList } from '@/hooks/useVaultEntries';
 import { openStoredFile, readImageAsDataUri } from '@/services/fileService';
-import { deleteResumePdfs, exportResumePdf, shareResumePdf } from '@/services/pdfService';
+import { deleteResumePdfs, exportResumePdf, shareStoredPdf } from '@/services/pdfService';
 import { buildAtsSimpleHtml } from '@/templates/resume/atsSimple';
 import { buildModernHtml } from '@/templates/resume/modern';
 import type { Resume, ResumeContent } from '@/types/resume';
@@ -57,7 +57,7 @@ export function useResumeActions(resume: Resume | null) {
 
   const sharePdf = useCallback(async () => {
     const path = await exportPdf();
-    await shareResumePdf(path, resume?.title ?? 'Resume');
+    await shareStoredPdf(path, resume?.title ?? 'Resume');
   }, [exportPdf, resume]);
 
   /** Returns the new copy's id. */

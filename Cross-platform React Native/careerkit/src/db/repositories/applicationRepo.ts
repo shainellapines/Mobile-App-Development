@@ -16,6 +16,7 @@ type ApplicationRow = {
   salary_offer: string | null;
   next_step_date: string | null;
   notes: string | null;
+  notification_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -33,6 +34,7 @@ function toApplication(row: ApplicationRow): Application {
     salaryOffer: row.salary_offer,
     nextStepDate: row.next_step_date,
     notes: row.notes,
+    notificationId: row.notification_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -126,4 +128,13 @@ export async function setApplicationStatus(
   status: ApplicationStatus
 ): Promise<void> {
   await db.runAsync('UPDATE applications SET status = ?, updated_at = ? WHERE id = ?', [status, nowIso(), id]);
+}
+
+/** Remembers which scheduled reminder belongs to an application (null = none). */
+export async function setApplicationNotificationId(
+  db: SQLiteDatabase,
+  id: number,
+  notificationId: string | null
+): Promise<void> {
+  await db.runAsync('UPDATE applications SET notification_id = ? WHERE id = ?', [notificationId, id]);
 }

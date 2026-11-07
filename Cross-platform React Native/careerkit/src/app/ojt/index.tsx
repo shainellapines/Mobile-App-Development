@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -11,7 +12,7 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { Screen } from '@/components/Screen';
 import { DEFAULT_REQUIRED_HOURS, RECENT_LOGS_SHOWN } from '@/constants/ojt';
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing, StatusColors } from '@/constants/theme';
-import { useOjtInfo, useOjtLogs, useOjtRequirements } from '@/hooks/useOjt';
+import { useDtrExport, useOjtInfo, useOjtLogs, useOjtRequirements } from '@/hooks/useOjt';
 import type { OjtInfo, OjtLog, OjtRequirement } from '@/types/ojt';
 import { formatDate, toIsoDate } from '@/utils/dates';
 import { formatHours, formatTimeRange } from '@/utils/ojtHours';
@@ -117,6 +118,21 @@ function ProgressCard({ info, logs }: { info: OjtInfo; logs: OjtLog[] }) {
 // ── Latest daily time records (FR-O2) ───────────────────────────────────────
 
 function LogsCard({ logs }: { logs: OjtLog[] }) {
+  const exportDtr = useDtrExport();
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await exportDtr();
+    } catch (e) {
+      console.warn('[ojt] DTR export failed', e);
+      Alert.alert('Could not export', 'Something went wrong while creating the DTR PDF.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const today = toIsoDate(new Date());
   const loggedToday = logs.some((l) => l.logDate === today);
   const recent = logs.slice(0, RECENT_LOGS_SHOWN);
@@ -151,6 +167,15 @@ function LogsCard({ logs }: { logs: OjtLog[] }) {
           variant="secondary"
           icon="list-outline"
           onPress={() => router.push('/ojt/logs')}
+        />
+      ) : null}
+      {logs.length > 0 ? (
+        <Button
+          title="Export DTR (PDF)"
+          variant="secondary"
+          icon="download-outline"
+          loading={exporting}
+          onPress={handleExport}
         />
       ) : null}
     </Card>
