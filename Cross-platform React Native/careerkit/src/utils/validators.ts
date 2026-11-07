@@ -1,4 +1,5 @@
 import { MAX_REMINDER_DAYS } from '@/constants/requirements';
+import type { ApplicationChannel, ApplicationStatus } from '@/types/application';
 import type { ExperienceType } from '@/types/experience';
 import type { RequirementCategory } from '@/types/requirement';
 import type { SkillCategory, SkillLevel } from '@/types/skill';
@@ -210,6 +211,32 @@ export function validateRequirement(values: RequirementFormValues): FormErrors<R
   const days = Number(values.reminderDays);
   if (!/^\d+$/.test(values.reminderDays.trim()) || days > MAX_REMINDER_DAYS) {
     errors.reminderDays = `Enter a whole number from 0 to ${MAX_REMINDER_DAYS}`;
+  }
+
+  return errors;
+}
+
+/** Field values of the Application form. resumeId is 'none' or a resume id as text (for the chips). */
+export type ApplicationFormValues = {
+  company: string;
+  position: string;
+  dateApplied: string | null;
+  channel: ApplicationChannel | 'none';
+  status: ApplicationStatus;
+  resumeId: string;
+  salaryOffer: string;
+  nextStepDate: string | null;
+  notes: string;
+};
+
+export function validateApplication(values: ApplicationFormValues): FormErrors<ApplicationFormValues> {
+  const errors: FormErrors<ApplicationFormValues> = {};
+
+  if (values.company.trim() === '') errors.company = 'Company is required';
+  if (values.position.trim() === '') errors.position = 'Position is required';
+  if (!values.dateApplied) errors.dateApplied = 'Date applied is required';
+  if (isEndBeforeStart(values.dateApplied, values.nextStepDate)) {
+    errors.nextStepDate = 'The next step cannot be before the date you applied';
   }
 
   return errors;

@@ -571,7 +571,7 @@ Work top to bottom. Check items off as they are completed.
 - [x] 2.1 Requirements Tracker CRUD + `StatusBadge` + auto status (FR-Q1, Q3, Q6)
 - [x] 2.2 Smart Templates + suggested expiry (FR-Q2, Q4)
 - [x] 2.3 Expiry notifications (FR-Q5)
-- [ ] 2.4 Application Tracker CRUD + status pipeline + linked resume (FR-A1–A4)
+- [x] 2.4 Application Tracker CRUD + status pipeline + linked resume (FR-A1–A4)
 - [ ] 2.5 OJT setup, daily logs, progress, OJT requirements checklist (FR-O1–O4)
 - [ ] 2.6 Dashboard + Career Readiness Score (FR-H1–H3, Section 7.1)
 

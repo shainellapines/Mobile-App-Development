@@ -49,15 +49,22 @@ export function useEntry<T, I>(id: number | undefined, repo: EntryRepo<T, I>) {
   const [entry, setEntry] = useState<T | null>(null);
   const [loading, setLoading] = useState(id !== undefined);
 
+  /** Reloads the record (e.g. after changing its status on a detail screen). */
+  const refresh = useCallback(async () => {
+    if (id === undefined) return;
+    try {
+      setEntry(await repo.get(db, id));
+    } catch (e) {
+      console.warn('[vault] load failed', e);
+    } finally {
+      setLoading(false);
+    }
+  }, [db, id, repo]);
+
   useFocusEffect(
     useCallback(() => {
-      if (id === undefined) return;
-      repo
-        .get(db, id)
-        .then(setEntry)
-        .catch((e) => console.warn('[vault] load failed', e))
-        .finally(() => setLoading(false));
-    }, [db, id, repo])
+      refresh();
+    }, [refresh])
   );
 
   /** Creates or updates, and returns the record's id (new id when creating). */
@@ -74,7 +81,7 @@ export function useEntry<T, I>(id: number | undefined, repo: EntryRepo<T, I>) {
     if (id !== undefined) await repo.remove(db, id);
   }, [db, id, repo]);
 
-  return { entry, loading, save, remove };
+  return { entry, loading, save, remove, refresh };
 }
 
 /** Reads "?id=3" from the current route. Returns undefined when adding a new entry. */
