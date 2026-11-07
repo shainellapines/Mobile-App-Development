@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Suspense, useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { AppLockGate } from '@/components/AppLockGate';
 import { Colors, FontWeight } from '@/constants/theme';
 import { DATABASE_NAME, initDatabase } from '@/db/client';
 import { initNotifications } from '@/services/notificationService';
@@ -17,7 +18,7 @@ export { ErrorBoundary } from 'expo-router';
  *   screen renders, so every screen can safely use the DB. A spinner shows while that happens.
  * - Wraps every screen in a Stack navigator with the CareerKit header style.
  * - Sets up local notifications (expiry reminders).
- * Later phases add the app-lock gate (3.1) here.
+ * - AppLockGate draws the PIN / biometrics lock screen on top when App Lock is on (FR-L2).
  */
 export default function RootLayout() {
   // Set up local notifications once (banner style + Android channel) for expiry reminders.
@@ -26,7 +27,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <>
+    <AppLockGate>
       <StatusBar style="light" />
       <Suspense fallback={<LoadingScreen />}>
         <SQLiteProvider databaseName={DATABASE_NAME} onInit={initDatabase} useSuspense>
@@ -50,10 +51,11 @@ export default function RootLayout() {
             <Stack.Screen name="requirements/templates" options={{ title: 'Smart Templates' }} />
             <Stack.Screen name="ojt/index" options={{ title: 'OJT Logger' }} />
             <Stack.Screen name="ojt/logs" options={{ title: 'Daily Time Records' }} />
+            <Stack.Screen name="settings/index" options={{ title: 'Settings' }} />
           </Stack>
         </SQLiteProvider>
       </Suspense>
-    </>
+    </AppLockGate>
   );
 }
 

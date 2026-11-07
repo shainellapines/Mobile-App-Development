@@ -98,3 +98,12 @@ export async function sendTestReminder(name: string): Promise<boolean> {
   });
   return true;
 }
+
+/** Reset all data (FR-L3): cancels every scheduled reminder. */
+export async function cancelAllReminders(): Promise<void> {
+  try {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+  } catch (e) {
+    console.warn('[notifications] cancel all failed', e);
+  }
+}

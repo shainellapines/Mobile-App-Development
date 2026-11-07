@@ -79,7 +79,7 @@ Graduating students, OJT trainees, fresh graduates, and job seekers in the Phili
 | File storage | `expo-file-system` (copy picked files into the app's document directory) |
 | PDF | `expo-print` (HTML → PDF) + `expo-sharing` |
 | Notifications | `expo-notifications` (local scheduled notifications only) |
-| Biometrics / lock | `expo-local-authentication`, `expo-secure-store` (store PIN hash) |
+| Biometrics / lock | `expo-local-authentication`, `expo-secure-store` (store PIN hash), `expo-crypto` (SHA-256 + random salt; approved by the team) |
 | Dates | `date-fns` |
 | Icons | `@expo/vector-icons` |
 | State | React hooks + React Context (no Redux/Zustand unless the team agrees) |
@@ -576,7 +576,7 @@ Work top to bottom. Check items off as they are completed.
 - [x] 2.6 Dashboard + Career Readiness Score (FR-H1–H3, Section 7.1)
 
 ### Phase 3 — Polish & Stretch
-- [ ] 3.1 App Lock with PIN + biometrics; Reset all data (FR-L1–L3)
+- [x] 3.1 App Lock with PIN + biometrics; Reset all data (FR-L1–L3)
 - [ ] 3.2 `modern` resume template
 - [ ] 3.3 Search/filters polish (FR-V5), interview reminders (FR-A5), OJT DTR PDF (FR-O5)
 - [ ] 3.4 UI polish pass: consistency check on every screen, loading/success states, app icon & splash screen

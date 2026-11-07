@@ -1,5 +1,6 @@
 import { MAX_BREAK_MINUTES, MAX_REQUIRED_HOURS } from '@/constants/ojt';
 import { MAX_REMINDER_DAYS } from '@/constants/requirements';
+import { PIN_MAX_LENGTH, PIN_MIN_LENGTH } from '@/constants/security';
 import type { ApplicationChannel, ApplicationStatus } from '@/types/application';
 import type { ExperienceType } from '@/types/experience';
 import type { RequirementCategory } from '@/types/requirement';
@@ -31,6 +32,12 @@ export function isValidPhone(value: string): boolean {
   if (!/^[+\d\s()-]+$/.test(trimmed)) return false;
   const digits = trimmed.replace(/\D/g, '').length;
   return digits >= 7 && digits <= 15;
+}
+
+/** App Lock PIN (FR-L1): 4 to 6 digits only. */
+export function isValidPin(value: string): boolean {
+  const digitsOnly = /^\d+$/.test(value);
+  return digitsOnly && value.length >= PIN_MIN_LENGTH && value.length <= PIN_MAX_LENGTH;
 }
 
 /** Turns an empty/whitespace-only input into null so the DB stores "no value" consistently. */

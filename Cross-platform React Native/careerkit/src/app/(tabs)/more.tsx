@@ -4,7 +4,7 @@ import { Card } from '@/components/Card';
 import { ListItem } from '@/components/ListItem';
 import { Screen } from '@/components/Screen';
 
-/** More tab: Resume Builder and OJT Logger; Settings (3.1) arrives later. */
+/** More tab: Resume Builder, OJT Logger, Settings. */
 export default function MoreScreen() {
   return (
     <Screen scroll edges={['left', 'right']}>
@@ -22,7 +22,12 @@ export default function MoreScreen() {
           subtitle="Rendered hours, daily time records, OJT requirements"
           onPress={() => router.push('/ojt' as Href)}
         />
-        <ListItem icon="settings-outline" title="Settings" subtitle="Coming soon" disabled />
+        <ListItem
+          icon="settings-outline"
+          title="Settings"
+          subtitle="App Lock, reset data, about"
+          onPress={() => router.push('/settings' as Href)}
+        />
       </Card>
     </Screen>
   );

@@ -80,3 +80,13 @@ export function deleteResumePdfs(resumeId: number): void {
     console.warn('[pdf] could not delete resume folder', resumeId, e);
   }
 }
+
+/** Reset all data (FR-L3): deletes every exported resume PDF. */
+export function deleteAllResumePdfs(): void {
+  try {
+    const folder = new Directory(Paths.document, RESUMES_DIR);
+    if (folder.exists) folder.delete();
+  } catch (e) {
+    console.warn('[pdf] could not delete resumes folder', e);
+  }
+}

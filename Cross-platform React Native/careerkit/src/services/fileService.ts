@@ -227,3 +227,13 @@ export function fileErrorMessage(e: unknown): string {
 
 (Details: ${e.message})` : generic;
 }
+
+/** Reset all data (FR-L3): deletes the whole attachments folder (every attached file and profile photo). */
+export function deleteAllAttachments(): void {
+  try {
+    const folder = new Directory(Paths.document, ATTACHMENTS_DIR);
+    if (folder.exists) folder.delete();
+  } catch (e) {
+    console.warn('[files] could not delete attachments folder', e);
+  }
+}

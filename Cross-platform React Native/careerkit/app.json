@@ -43,6 +43,13 @@
           "cameraPermission": "CareerKit needs the camera so you can take photos of your documents and certificates.",
           "microphonePermission": false
         }
+      ],
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "CareerKit uses Face ID so you can unlock the app quickly. Your PIN always works too."
+        }
       ]
     ],
     "experiments": {
