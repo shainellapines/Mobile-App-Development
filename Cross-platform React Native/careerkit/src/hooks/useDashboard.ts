@@ -2,7 +2,7 @@ import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
 
-import { getDashboardData, type DashboardData } from '@/db/repositories/dashboardRepo';
+import { getDashboardData, getVaultCounts, type DashboardData, type VaultCounts } from '@/db/repositories/dashboardRepo';
 import type { Profile } from '@/types/profile';
 import { computeOjtProgress } from '@/utils/ojtProgress';
 import { computeReadinessScore, type ReadinessInput } from '@/utils/readinessScore';
@@ -56,4 +56,20 @@ export function useDashboard() {
   const ojtProgress = data?.ojtInfo ? computeOjtProgress(data.ojtInfo.requiredHours, data.ojtLogs) : null;
 
   return { data, loading, readiness, ojtProgress };
+}
+
+/** How many entries each vault category has (for the Vault tab tiles). Reloads on focus. */
+export function useVaultCounts() {
+  const db = useSQLiteContext();
+  const [counts, setCounts] = useState<VaultCounts | null>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      getVaultCounts(db)
+        .then(setCounts)
+        .catch((e) => console.warn('[vault] counts failed', e));
+    }, [db])
+  );
+
+  return counts;
 }

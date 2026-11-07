@@ -11,7 +11,7 @@ type CardProps = {
   accessibilityLabel?: string;
 };
 
-/** White rounded box used to group content on a screen. */
+/** White rounded box used to group content (clean minimal: no border, stands out from the grey background). */
 export function Card({ children, onPress, style, accessibilityLabel }: CardProps) {
   if (onPress) {
     return (
@@ -32,8 +32,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.card,
-    borderWidth: 1,
-    borderColor: Colors.border,
     padding: Spacing.lg,
     gap: Spacing.sm,
   },

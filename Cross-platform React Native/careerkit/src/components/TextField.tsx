@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
 
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing } from '@/constants/theme';
@@ -10,8 +11,22 @@ type TextFieldProps = TextInputProps & {
   required?: boolean;
 };
 
-/** Labeled text input with an optional inline error. Accepts all normal TextInput props. */
-export function TextField({ label, error, required = false, multiline, style, ...inputProps }: TextFieldProps) {
+/**
+ * Labeled text input with an optional inline error. Accepts all normal TextInput props.
+ * MD3 "filled" style: a tonal box with no border, which gets a blue outline while typing.
+ */
+export function TextField({
+  label,
+  error,
+  required = false,
+  multiline,
+  style,
+  onFocus,
+  onBlur,
+  ...inputProps
+}: TextFieldProps) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>
@@ -25,9 +40,18 @@ export function TextField({ label, error, required = false, multiline, style, ..
         style={[
           styles.input,
           multiline && styles.multiline,
+          focused && styles.inputFocused,
           error ? styles.inputError : undefined,
           style,
         ]}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
         {...inputProps}
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -49,10 +73,10 @@ const styles = StyleSheet.create({
   },
   input: {
     minHeight: MIN_TOUCH_SIZE,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderWidth: 2,
+    borderColor: 'transparent', // keeps the size the same when the focus outline appears
     borderRadius: Radius.control,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.surfaceContainer,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     fontSize: FontSize.md,
@@ -61,6 +85,10 @@ const styles = StyleSheet.create({
   multiline: {
     minHeight: MIN_TOUCH_SIZE * 2.5,
     textAlignVertical: 'top', // Android: start typing at the top, not the middle
+  },
+  inputFocused: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.surface,
   },
   inputError: {
     borderColor: Colors.danger,

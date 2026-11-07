@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing } from '@/constants/theme';
+import { BUTTON_HEIGHT, Colors, FontSize, FontWeight, Radius, Spacing } from '@/constants/theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger';
 
@@ -17,11 +17,11 @@ type ButtonProps = {
   loading?: boolean;
 };
 
-// Colors for each variant, so the component stays a simple lookup.
-const VARIANT_COLORS: Record<ButtonVariant, { background: string; text: string; border: string }> = {
-  primary: { background: Colors.primary, text: Colors.onPrimary, border: Colors.primary },
-  secondary: { background: Colors.surface, text: Colors.primary, border: Colors.border },
-  danger: { background: Colors.danger, text: Colors.onPrimary, border: Colors.danger },
+// MD3 button styles: primary = "filled", secondary = "tonal" (light teal), danger = filled red.
+const VARIANT_COLORS: Record<ButtonVariant, { background: string; text: string }> = {
+  primary: { background: Colors.primary, text: Colors.onPrimary },
+  secondary: { background: Colors.secondaryContainer, text: Colors.onSecondaryContainer },
+  danger: { background: Colors.danger, text: Colors.onPrimary },
 };
 
 export function Button({
@@ -43,7 +43,7 @@ export function Button({
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: colors.background, borderColor: colors.border },
+        { backgroundColor: colors.background },
         pressed && styles.pressed,
         isDisabled && styles.disabled,
       ]}>
@@ -61,11 +61,10 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: MIN_TOUCH_SIZE,
-    borderRadius: Radius.control,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    minHeight: BUTTON_HEIGHT,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },

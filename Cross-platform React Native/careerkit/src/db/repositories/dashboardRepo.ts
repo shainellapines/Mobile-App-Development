@@ -30,7 +30,7 @@ export type DashboardData = {
 };
 
 /** One query with sub-selects: counts the rows of six tables at once. */
-async function getVaultCounts(db: SQLiteDatabase): Promise<VaultCounts> {
+export async function getVaultCounts(db: SQLiteDatabase): Promise<VaultCounts> {
   const row = await db.getFirstAsync<VaultCounts>(
     `SELECT
        (SELECT COUNT(*) FROM education)      AS education,

@@ -9,6 +9,10 @@ type ProgressRingProps = {
   size: number;
   thickness: number;
   color?: string;
+  /** Color of the empty part of the ring. */
+  trackColor?: string;
+  /** Must match what is behind the ring (e.g. the tile color), so the middle looks hollow. */
+  holeColor?: string;
   /** Shown in the middle of the ring (e.g. the score). */
   children?: ReactNode;
   accessibilityLabel?: string;
@@ -30,6 +34,8 @@ export function ProgressRing({
   size,
   thickness,
   color = Colors.accent,
+  trackColor = Colors.border,
+  holeColor = Colors.surface,
   children,
   accessibilityLabel,
 }: ProgressRingProps) {
@@ -42,7 +48,7 @@ export function ProgressRing({
 
   return (
     <View
-      style={[styles.box, disk, { backgroundColor: Colors.border }]}
+      style={[styles.box, disk, { backgroundColor: trackColor }]}
       accessibilityRole="progressbar"
       accessibilityLabel={accessibilityLabel}
       accessibilityValue={{ min: 0, max: 100, now: Math.round(p * 100) }}>
@@ -89,6 +95,7 @@ export function ProgressRing({
             width: size - thickness * 2,
             height: size - thickness * 2,
             borderRadius: half - thickness,
+            backgroundColor: holeColor,
           },
         ]}>
         {children}
@@ -108,7 +115,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   hole: {
-    backgroundColor: Colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },

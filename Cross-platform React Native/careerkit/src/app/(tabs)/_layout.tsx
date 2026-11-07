@@ -1,10 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { Colors, FontWeight } from '@/constants/theme';
+import { Colors, FontWeight, Radius, Spacing } from '@/constants/theme';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
+
+/** MD3 active indicator size (a pill behind the active tab's icon). */
+const INDICATOR_WIDTH = 56;
+const INDICATOR_HEIGHT = 30;
 
 type TabIconProps = {
   active: IconName;
@@ -13,14 +18,19 @@ type TabIconProps = {
   size: number;
 };
 
-/** Tab-bar icon: filled + primary color when the tab is active, outline + muted otherwise. */
+/**
+ * MD3 navigation bar icon: the active tab gets a filled icon inside a light-teal "pill"
+ * (the active indicator); inactive tabs show an outline icon only.
+ */
 function TabIcon({ active, inactive, focused, size }: TabIconProps) {
   return (
-    <Ionicons
-      name={focused ? active : inactive}
-      size={size}
-      color={focused ? Colors.primary : Colors.mutedText}
-    />
+    <View style={[styles.indicator, focused && styles.indicatorActive]}>
+      <Ionicons
+        name={focused ? active : inactive}
+        size={size}
+        color={focused ? Colors.onSecondaryContainer : Colors.mutedText}
+      />
+    </View>
   );
 }
 
@@ -33,12 +43,15 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: Colors.primary },
-        headerTintColor: Colors.onPrimary,
+        headerStyle: { backgroundColor: Colors.background },
+        headerTintColor: Colors.text,
         headerTitleStyle: { fontWeight: FontWeight.semibold },
-        tabBarActiveTintColor: Colors.primary,
+        headerShadowVisible: false,
+        tabBarActiveTintColor: Colors.text,
         tabBarInactiveTintColor: Colors.mutedText,
-        tabBarStyle: { backgroundColor: Colors.surface, borderTopColor: Colors.border },
+        tabBarLabelStyle: { fontWeight: FontWeight.semibold },
+        tabBarStyle: { backgroundColor: Colors.surface, borderTopWidth: 0, elevation: 0 },
+        tabBarIconStyle: { width: INDICATOR_WIDTH },
       }}>
       <Tabs.Screen
         name="index"
@@ -80,3 +93,17 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  indicator: {
+    width: INDICATOR_WIDTH,
+    height: INDICATOR_HEIGHT,
+    borderRadius: Radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.xs / 2,
+  },
+  indicatorActive: {
+    backgroundColor: Colors.secondaryContainer,
+  },
+});

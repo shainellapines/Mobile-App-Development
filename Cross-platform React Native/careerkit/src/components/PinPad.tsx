@@ -136,9 +136,7 @@ const styles = StyleSheet.create({
   },
   keyButton: {
     borderRadius: Radius.pill,
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    backgroundColor: Colors.surfaceContainer,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -148,6 +146,6 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   pressed: {
-    backgroundColor: Colors.border,
+    backgroundColor: Colors.primaryContainer,
   },
 });

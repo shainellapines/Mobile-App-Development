@@ -25,7 +25,7 @@ export function ListItem({ title, subtitle, icon, onPress, disabled = false }: L
       style={({ pressed }) => [styles.row, pressed && styles.pressed, disabled && styles.disabled]}>
       {icon ? (
         <View style={styles.iconBox}>
-          <Ionicons name={icon} size={FontSize.lg} color={Colors.primary} />
+          <Ionicons name={icon} size={FontSize.lg} color={Colors.onPrimaryContainer} />
         </View>
       ) : null}
       <View style={styles.text}>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     width: MIN_TOUCH_SIZE - Spacing.xs,
     height: MIN_TOUCH_SIZE - Spacing.xs,
     borderRadius: Radius.control,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
   },

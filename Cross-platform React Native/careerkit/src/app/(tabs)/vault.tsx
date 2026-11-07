@@ -1,12 +1,13 @@
-import type Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, type Href } from 'expo-router';
 import type { ComponentProps } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { Card } from '@/components/Card';
-import { ListItem } from '@/components/ListItem';
 import { Screen } from '@/components/Screen';
-import { Colors, FontSize, FontWeight } from '@/constants/theme';
+import { BentoRow, Tile, TileIcon } from '@/components/Tile';
+import { Colors, FontSize, FontWeight, Spacing } from '@/constants/theme';
+import type { VaultCounts } from '@/db/repositories/dashboardRepo';
+import { useVaultCounts } from '@/hooks/useDashboard';
 import { useProfile } from '@/hooks/useProfile';
 
 type VaultCategory = {
@@ -53,47 +54,93 @@ const CATEGORIES: VaultCategory[] = [
   },
 ];
 
-/** Career Vault home: the Profile plus the five vault categories. */
-export default function VaultScreen() {
-  // useProfile reloads on focus, so the name updates right after editing the profile.
-  const { profile } = useProfile();
+/** How many entries are in each category (key of VaultCounts). */
+const COUNT_KEYS: Record<string, keyof VaultCounts> = {
+  Education: 'education',
+  Experience: 'experiences',
+  Projects: 'projects',
+  Skills: 'skills',
+  Certifications: 'certifications',
+};
 
-  const profileSubtitle = profile?.fullName
-    ? [profile.fullName, profile.headline].filter(Boolean).join(' · ')
-    : 'Not set up yet — tap to add your name and contact info';
+/**
+ * Career Vault home as a bento grid: a wide Profile tile, then the five categories
+ * as tiles (two per row, the last one wide) with how many entries each has.
+ */
+export default function VaultScreen() {
+  // Both hooks reload on focus, so names and counts update right after editing.
+  const { profile } = useProfile();
+  const counts = useVaultCounts();
+
+  const hasProfile = Boolean(profile?.fullName);
+  const rows = [CATEGORIES.slice(0, 2), CATEGORIES.slice(2, 4), CATEGORIES.slice(4)];
 
   return (
     <Screen scroll edges={['left', 'right']}>
-      <Card>
-        <ListItem
-          icon="person-circle-outline"
-          title="Profile"
-          subtitle={profileSubtitle}
-          onPress={() => router.push('/vault/profile')}
-        />
-      </Card>
+      <Tile tone="primary" onPress={() => router.push('/vault/profile')} accessibilityLabel="Edit profile">
+        <View style={styles.profileRow}>
+          <TileIcon name="person-outline" onTone="primary" />
+          <View style={styles.flex}>
+            <Text style={styles.tileTitle}>{hasProfile ? profile?.fullName : 'Set up your profile'}</Text>
+            <Text style={styles.muted} numberOfLines={2}>
+              {hasProfile
+                ? profile?.headline || 'Add a headline, e.g. "BSIT Graduate | Front-End Developer"'
+                : 'Your name and contact info appear at the top of every resume'}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={FontSize.lg} color={Colors.onPrimaryContainer} />
+        </View>
+      </Tile>
 
-      <Text style={styles.section}>Categories</Text>
-      <Card>
-        {CATEGORIES.map((c) => (
-          <ListItem
-            key={c.title}
-            icon={c.icon}
-            title={c.title}
-            subtitle={c.subtitle}
-            onPress={() => router.push(c.href)}
-          />
-        ))}
-      </Card>
+      {rows.map((row) => (
+        <BentoRow key={row[0].title}>
+          {row.map((c) => {
+            const count = counts?.[COUNT_KEYS[c.title]];
+            return (
+              <Tile key={c.title} onPress={() => router.push(c.href)} accessibilityLabel={`Open ${c.title}`}>
+                <View style={styles.tileTop}>
+                  <TileIcon name={c.icon} />
+                  {count !== undefined ? <Text style={styles.count}>{count}</Text> : null}
+                </View>
+                <Text style={styles.tileTitle}>{c.title}</Text>
+                <Text style={styles.muted} numberOfLines={2}>
+                  {c.subtitle}
+                </Text>
+              </Tile>
+            );
+          })}
+        </BentoRow>
+      ))}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  section: {
-    fontSize: FontSize.sm,
+  flex: {
+    flex: 1,
+  },
+  profileRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  tileTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  count: {
+    fontSize: FontSize.xl,
     fontWeight: FontWeight.semibold,
+    color: Colors.text,
+  },
+  tileTitle: {
+    fontSize: FontSize.md,
+    fontWeight: FontWeight.semibold,
+    color: Colors.text,
+  },
+  muted: {
+    fontSize: FontSize.xs,
     color: Colors.mutedText,
-    textTransform: 'uppercase',
   },
 });

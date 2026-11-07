@@ -28,14 +28,16 @@ export default function RootLayout() {
 
   return (
     <AppLockGate>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       <Suspense fallback={<LoadingScreen />}>
         <SQLiteProvider databaseName={DATABASE_NAME} onInit={initDatabase} useSuspense>
           <Stack
             screenOptions={{
-              headerStyle: { backgroundColor: Colors.primary },
-              headerTintColor: Colors.onPrimary,
+              // Clean minimal header: same color as the screen, dark text, no shadow line.
+              headerStyle: { backgroundColor: Colors.background },
+              headerTintColor: Colors.text,
               headerTitleStyle: { fontWeight: FontWeight.semibold },
+              headerShadowVisible: false,
               contentStyle: { backgroundColor: Colors.background },
             }}>
             {/* The tabs draw their own headers, so the Stack header is hidden for them. */}

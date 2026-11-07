@@ -1,13 +1,25 @@
 /**
  * CareerKit design tokens (CLAUDE.md Section 8.1).
  * Screens and components must use these values instead of hard-coded colors or sizes.
+ *
+ * Design style (step 3.4): Material Design 3 + Bento Grid + Clean Minimalism.
+ * - MD3 "tonal" colors: each brand color has a light CONTAINER version (for chips, tiles,
+ *   icon boxes) and an ON-container color for text placed on top of it.
+ * - Clean minimalism: cards have no borders; they stand out from a slightly grey background.
+ * - Bento grid: big rounded tiles of different sizes (see components/Tile.tsx).
  */
 
 export const Colors = {
   primary: '#1E3A8A', // deep blue: trust, professional
   accent: '#0D9488', // teal
-  background: '#F8FAFC',
+  background: '#F1F5F9', // slightly grey, so white cards stand out without borders
   surface: '#FFFFFF',
+  surfaceContainer: '#E8EDF4', // filled text fields, keypad keys
+  primaryContainer: '#DCE4FB', // light blue tiles / icon boxes / FAB
+  onPrimaryContainer: '#14286B',
+  secondaryContainer: '#CCF2EC', // light teal: selected chips, tonal buttons
+  onSecondaryContainer: '#0B5F57',
+  outline: '#CBD5E1', // unselected chip borders
   text: '#0F172A',
   mutedText: '#64748B',
   border: '#E2E8F0',
@@ -43,10 +55,14 @@ export const Spacing = {
   xxl: 32,
 } as const;
 
+/** MD3 shape scale: bigger, softer corners. */
 export const Radius = {
-  card: 12,
-  control: 8, // inputs and buttons
-  pill: 999, // fully rounded (badges, FAB)
+  tile: 24, // bento tiles
+  card: 20,
+  fab: 16,
+  control: 12, // text fields, picker boxes
+  chip: 8,
+  pill: 999, // fully rounded (buttons, badges)
 } as const;
 
 /** Font sizes: 12 / 14 / 16 / 20 / 24 / 32. The system font is used everywhere. */
@@ -66,3 +82,15 @@ export const FontWeight = {
 
 /** Minimum size of anything the user can tap (Section 8.3). */
 export const MIN_TOUCH_SIZE = 44;
+
+/** MD3 buttons are 48 tall (still above the 44 minimum). */
+export const BUTTON_HEIGHT = 48;
+
+/** Very soft shadow (MD3 elevation level 1) for floating things like the FAB. */
+export const SoftShadow = {
+  shadowColor: '#0F172A',
+  shadowOpacity: 0.08,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 2,
+} as const;

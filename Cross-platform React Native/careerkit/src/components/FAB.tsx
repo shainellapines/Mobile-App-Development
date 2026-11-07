@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { Colors, FontSize, Radius, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Radius, SoftShadow, Spacing } from '@/constants/theme';
 
 const FAB_SIZE = 56;
 
@@ -14,7 +14,7 @@ type FABProps = {
 };
 
 /**
- * Floating Action Button: the round "+" button in the bottom-right corner of every list (Section 8.3).
+ * Floating Action Button (MD3 style: rounded square, light blue): the "+" button in the bottom-right corner of every list (Section 8.3).
  * Place it as the last child of a screen so it floats above the list.
  */
 export function FAB({ onPress, accessibilityLabel, icon = 'add' }: FABProps) {
@@ -24,7 +24,7 @@ export function FAB({ onPress, accessibilityLabel, icon = 'add' }: FABProps) {
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
       style={({ pressed }) => [styles.fab, pressed && styles.pressed]}>
-      <Ionicons name={icon} size={FontSize.xl + 4} color={Colors.onPrimary} />
+      <Ionicons name={icon} size={FontSize.xl + 4} color={Colors.onPrimaryContainer} />
     </Pressable>
   );
 }
@@ -36,16 +36,11 @@ const styles = StyleSheet.create({
     bottom: Spacing.xl,
     width: FAB_SIZE,
     height: FAB_SIZE,
-    borderRadius: Radius.pill,
-    backgroundColor: Colors.accent,
+    borderRadius: Radius.fab,
+    backgroundColor: Colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
-    // Shadow: iOS uses shadow*, Android uses elevation
-    shadowColor: Colors.text,
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 6,
+    ...SoftShadow,
   },
   pressed: {
     opacity: 0.85,

@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing } from '@/constants/theme';
@@ -36,6 +37,8 @@ export function Select<T extends string>({ label, options, value, onChange }: Se
                 selected && styles.chipSelected,
                 pressed && styles.pressed,
               ]}>
+              {/* MD3 filter chip: a check mark shows which option is selected (not color alone). */}
+              {selected ? <Ionicons name="checkmark" size={FontSize.md} color={Colors.onSecondaryContainer} /> : null}
               <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
                 {option.label}
               </Text>
@@ -65,14 +68,17 @@ const styles = StyleSheet.create({
     minHeight: MIN_TOUCH_SIZE,
     justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.pill,
+    borderRadius: Radius.chip,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: Colors.outline,
     backgroundColor: Colors.surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
   chipSelected: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: Colors.secondaryContainer,
+    borderColor: Colors.secondaryContainer,
   },
   pressed: {
     opacity: 0.7,
@@ -82,7 +88,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   chipTextSelected: {
-    color: Colors.onPrimary,
+    color: Colors.onSecondaryContainer,
     fontWeight: FontWeight.semibold,
   },
 });

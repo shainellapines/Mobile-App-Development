@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing } from '@/constants/theme';
@@ -32,6 +33,7 @@ export function FilterChips<T extends string>({ accessibilityLabel, options, val
             accessibilityRole="button"
             accessibilityState={{ selected }}
             style={({ pressed }) => [styles.chip, selected && styles.selected, pressed && styles.pressed]}>
+            {selected ? <Ionicons name="checkmark" size={FontSize.md} color={Colors.onSecondaryContainer} /> : null}
             <Text style={[styles.text, selected && styles.selectedText]}>{option.label}</Text>
           </Pressable>
         );
@@ -48,14 +50,17 @@ const styles = StyleSheet.create({
     minHeight: MIN_TOUCH_SIZE,
     justifyContent: 'center',
     paddingHorizontal: Spacing.md,
-    borderRadius: Radius.pill,
+    borderRadius: Radius.chip,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: Colors.outline,
     backgroundColor: Colors.surface,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
   selected: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: Colors.secondaryContainer,
+    borderColor: Colors.secondaryContainer,
   },
   pressed: {
     opacity: 0.7,
@@ -65,7 +70,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   selectedText: {
-    color: Colors.onPrimary,
+    color: Colors.onSecondaryContainer,
     fontWeight: FontWeight.semibold,
   },
 });

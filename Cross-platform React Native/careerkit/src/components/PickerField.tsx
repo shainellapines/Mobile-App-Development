@@ -139,10 +139,10 @@ const styles = StyleSheet.create({
     minHeight: MIN_TOUCH_SIZE,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
+    borderWidth: 2,
+    borderColor: 'transparent',
     borderRadius: Radius.control,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.surfaceContainer, // same MD3 filled look as TextField
   },
   inputError: {
     borderColor: Colors.danger,

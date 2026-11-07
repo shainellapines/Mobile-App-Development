@@ -497,16 +497,32 @@ export const OJT_REQUIREMENT_DEFAULTS = [
 Goal (rubric): **intuitive, visually appealing, consistent**. Every screen must use the shared theme and components; no hard-coded colors or spacing in screens.
 
 ### 8.1 Theme (`src/constants/theme.ts`)
-- **Primary:** deep blue `#1E3A8A` (trust, professional); **Accent:** teal `#0D9488`
-- **Background:** `#F8FAFC`; **Surface/Card:** `#FFFFFF`; **Text:** `#0F172A`; **Muted text:** `#64748B`; **Border:** `#E2E8F0`
+**Design style (team decision, step 3.4): Material Design 3 + Bento Grid + Clean Minimalism.**
+- **MD3 tonal color:** every brand color has a light *container* tone for chips, tiles and icon badges, plus an *on-container* text color.
+- **Clean minimalism:** cards and tiles have **no borders**, light headers with no shadow, plenty of white space, and color used only for meaning.
+- **Bento grid:** home-style screens (Dashboard, Vault, More) are grids of rounded tiles of different sizes (`Tile`, `BentoRow`). The most important item gets the biggest tile.
+
+Colors:
+- **Primary:** deep blue `#1E3A8A` (trust, professional); **Primary container:** `#DCE4FB`; **On primary container:** `#14286B`
+- **Accent (secondary):** teal `#0D9488`; **Secondary container:** `#CCF2EC`; **On secondary container:** `#0B5F57`
+- **Background:** `#F1F5F9`; **Surface/Card:** `#FFFFFF`; **Surface container** (filled inputs, keypad): `#E8EDF4`
+- **Text:** `#0F172A`; **Muted text:** `#64748B`; **Border:** `#E2E8F0`; **Outline** (unselected chips): `#CBD5E1`
 - **Status colors:** Valid `#16A34A`, Expiring soon `#F59E0B`, Expired `#DC2626`, Not yet obtained `#64748B`
 - **Application status colors:** Applied blue, Interview purple, Offer green, Rejected red, Withdrawn gray
-- **Spacing scale:** 4, 8, 12, 16, 24, 32. **Radius:** 12 for cards, 8 for inputs/buttons.
+
+Shape, spacing and type:
+- **Spacing scale:** 4, 8, 12, 16, 24, 32.
+- **Radius (MD3 shape scale):** tiles 24, cards 20, FAB 16, inputs 12, chips 8, buttons/badges fully rounded (pill).
 - **Typography:** system font; sizes 12 / 14 / 16 / 20 / 24 / 32; headings semibold.
+- **Components:**
+  - Buttons are 48 tall: *filled* (primary), *tonal* (secondary), and danger.
+  - Text fields are MD3 *filled*: a tonal box that gets a blue outline on focus.
+  - Chips are MD3 *filter chips*: the selected one shows a ✓ on a teal container.
+  - The tab bar uses an MD3 active-indicator pill.
 - Dark mode is optional (Phase 3).
 
 ### 8.2 Shared components (`src/components/`)
-`Screen` (safe area + padding), `Header`, `Card`, `Button` (primary/secondary/danger), `TextField` (label + error), `DateField`, `Select`, `Checkbox`, `StatusBadge`, `EmptyState`, `ListItem`, `ProgressRing`, `ProgressBar`, `ConfirmDialog`, `FAB` (floating add button), `AttachmentPicker`.
+`Screen` (safe area + padding), `Header`, `Card`, `Tile` + `BentoRow` (bento grid), `Button` (primary/secondary/danger), `TextField` (label + error), `DateField`, `Select`, `Checkbox`, `StatusBadge`, `EmptyState`, `ListItem`, `ProgressRing`, `ProgressBar`, `ConfirmDialog`, `FAB` (floating add button), `AttachmentPicker`.
 
 ### 8.3 UX rules
 - Bottom tabs: **Home, Vault, Requirements, Applications, More**.

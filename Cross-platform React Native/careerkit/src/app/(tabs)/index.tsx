@@ -3,14 +3,14 @@ import { router, type Href } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Card } from '@/components/Card';
 import { FieldHint } from '@/components/FieldHint';
 import { ProgressBar } from '@/components/ProgressBar';
 import { ProgressRing } from '@/components/ProgressRing';
 import { Screen } from '@/components/Screen';
 import { StatusBadge } from '@/components/StatusBadge';
+import { BentoRow, Tile, TileIcon, toneBackground } from '@/components/Tile';
 import { APPLICATION_STATUS_INFO, APPLICATION_STATUS_ORDER } from '@/constants/applications';
-import { EXPIRING_SOON_DAYS, REQUIREMENT_STATUS_INFO } from '@/constants/requirements';
+import { EXPIRING_SOON_DAYS } from '@/constants/requirements';
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing, StatusColors } from '@/constants/theme';
 import type { DashboardData } from '@/db/repositories/dashboardRepo';
 import { useDashboard } from '@/hooks/useDashboard';
@@ -22,10 +22,10 @@ import { expiryCountdown, getRequirementStatus, sortByUrgency } from '@/utils/re
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-const RING_SIZE = 120;
+const RING_SIZE = 112;
 const RING_THICKNESS = 12;
 const MAX_SUGGESTIONS = 3;
-const MAX_DOCUMENTS_SHOWN = 3;
+const MAX_DOCUMENTS_SHOWN = 2;
 
 /** Where each suggestion takes the user, so they can fix it in one tap. */
 const SUGGESTION_ROUTES: Record<ReadinessCriterionId, Href> = {
@@ -46,7 +46,13 @@ function scoreColor(score: number): string {
   return StatusColors.expired;
 }
 
-/** Dashboard (FR-H1–H3): readiness score, documents, applications, OJT, quick actions. */
+/**
+ * Dashboard (FR-H1–H3) as a BENTO GRID:
+ *   [        Career Readiness (big hero tile)        ]
+ *   [ Documents        ] [ Applications              ]
+ *   [              OJT progress (wide)               ]
+ *   [ Add Experience ] [ New Resume ] [ Log OJT Hours ]
+ */
 export default function DashboardScreen() {
   const { data, loading, readiness, ojtProgress } = useDashboard();
 
@@ -59,58 +65,66 @@ export default function DashboardScreen() {
   }
 
   const ojtSetUp = data.ojtInfo !== null;
+  const firstName = data.profile?.fullName.trim().split(' ')[0] ?? '';
 
   return (
     <Screen scroll edges={['left', 'right']}>
-      <ReadinessCard readiness={readiness} firstName={data.profile?.fullName.trim().split(' ')[0] ?? ''} />
-      <DocumentsCard requirements={data.requirements} />
-      <ApplicationsCard counts={data.applicationCounts} />
-      {ojtProgress ? <OjtCard progress={ojtProgress} /> : null}
+      <View style={styles.greeting}>
+        <Text style={styles.hello}>{firstName ? `Hi, ${firstName}` : 'Welcome'}</Text>
+        <Text style={styles.muted}>Your career toolkit at a glance</Text>
+      </View>
 
-      <Card>
-        <Text style={styles.heading}>Quick actions</Text>
-        <View style={styles.actions}>
-          <QuickAction icon="briefcase-outline" label="Add Experience" href="/vault/experience/form" />
-          <QuickAction icon="document-text-outline" label="New Resume" href="/resume/builder" />
-          <QuickAction
-            icon="time-outline"
-            label={ojtSetUp ? 'Log OJT Hours' : 'Set Up OJT'}
-            href={ojtSetUp ? '/ojt/log-form' : '/ojt/setup'}
-          />
-        </View>
-      </Card>
+      <ReadinessTile readiness={readiness} />
+
+      <BentoRow>
+        <DocumentsTile requirements={data.requirements} />
+        <ApplicationsTile counts={data.applicationCounts} />
+      </BentoRow>
+
+      {ojtProgress ? <OjtTile progress={ojtProgress} /> : null}
+
+      <BentoRow>
+        <QuickAction icon="briefcase-outline" label="Add Experience" href="/vault/experience/form" />
+        <QuickAction icon="document-text-outline" label="New Resume" href="/resume/builder" />
+        <QuickAction
+          icon="time-outline"
+          label={ojtSetUp ? 'Log OJT Hours' : 'Set Up OJT'}
+          href={ojtSetUp ? '/ojt/log-form' : '/ojt/setup'}
+        />
+      </BentoRow>
 
       <FieldHint>All your data stays on this phone. CareerKit works fully offline.</FieldHint>
     </Screen>
   );
 }
 
-// ── Career Readiness Score (FR-H1) ──────────────────────────────────────────
+// ── Career Readiness Score: the hero tile (FR-H1) ───────────────────────────
 
-function ReadinessCard({ readiness, firstName }: { readiness: ReadinessResult; firstName: string }) {
+function ReadinessTile({ readiness }: { readiness: ReadinessResult }) {
   const { score, label, suggestions } = readiness;
   const color = scoreColor(score);
 
   return (
-    <Card>
-      <Text style={styles.greeting}>{firstName ? `Hi, ${firstName}!` : 'Welcome to CareerKit!'}</Text>
+    <Tile tone="primary">
       <View style={styles.scoreRow}>
         <ProgressRing
           progress={score / 100}
           size={RING_SIZE}
           thickness={RING_THICKNESS}
           color={color}
+          trackColor={Colors.surface}
+          holeColor={toneBackground('primary')}
           accessibilityLabel={`Career Readiness Score: ${score} out of 100`}>
           <Text style={styles.score}>{score}</Text>
           <Text style={styles.muted}>of 100</Text>
         </ProgressRing>
         <View style={styles.flex}>
-          <Text style={styles.muted}>Career Readiness</Text>
-          <Text style={[styles.scoreLabel, { color }]}>{label}</Text>
+          <Text style={styles.overline}>CAREER READINESS</Text>
+          <Text style={styles.scoreLabel}>{label}</Text>
           <Text style={styles.body}>
             {suggestions.length === 0
-              ? 'Everything is in place. Keep your documents valid and good luck!'
-              : `${suggestions.length} step${suggestions.length === 1 ? '' : 's'} left to reach 100.`}
+              ? 'Everything is in place. Keep your documents valid!'
+              : `${suggestions.length} step${suggestions.length === 1 ? '' : 's'} left to reach 100`}
           </Text>
         </View>
       </View>
@@ -122,126 +136,121 @@ function ReadinessCard({ readiness, firstName }: { readiness: ReadinessResult; f
           accessibilityRole="button"
           accessibilityLabel={`${s.suggestion}, plus ${s.points} points`}
           style={({ pressed }) => [styles.suggestion, pressed && styles.pressed]}>
-          <Ionicons name="arrow-up-circle-outline" size={FontSize.lg} color={Colors.accent} />
           <Text style={styles.suggestionText}>{s.suggestion}</Text>
-          <Text style={styles.points}>+{s.points}</Text>
+          <View style={styles.pointsPill}>
+            <Text style={styles.points}>+{s.points}</Text>
+          </View>
         </Pressable>
       ))}
-    </Card>
+    </Tile>
   );
 }
 
-// ── Documents expiring soon / expired (FR-H2) ───────────────────────────────
+// ── Documents (FR-H2) ───────────────────────────────────────────────────────
 
-function DocumentsCard({ requirements }: { requirements: DashboardData['requirements'] }) {
-  // Only expired and expiring-soon documents need attention here; most urgent first.
+function DocumentsTile({ requirements }: { requirements: DashboardData['requirements'] }) {
+  // Expired and expiring-soon documents need attention; most urgent first.
   const urgent = sortByUrgency(requirements).filter((r) => {
     const status = getRequirementStatus(r);
     return status === 'expired' || status === 'expiring_soon';
   });
+  const hasExpired = urgent.some((r) => getRequirementStatus(r) === 'expired');
 
   return (
-    <Card onPress={() => router.push('/requirements')} accessibilityLabel="Open requirements">
-      <CardTitle icon="shield-checkmark-outline" title="Documents" />
+    <Tile onPress={() => router.push('/requirements')} accessibilityLabel="Open requirements">
+      <TileIcon name="shield-checkmark-outline" />
+      <Text style={styles.tileTitle}>Documents</Text>
       {requirements.length === 0 ? (
-        <FieldHint>No requirements yet. Use Smart Templates to add NBI, Police Clearance, and more.</FieldHint>
+        <Text style={styles.muted}>Add NBI, Police Clearance and more with Smart Templates</Text>
       ) : urgent.length === 0 ? (
-        <Text style={styles.body}>{`Nothing expires in the next ${EXPIRING_SOON_DAYS} days.`}</Text>
+        <>
+          <Text style={[styles.bigNumber, { color: StatusColors.valid }]}>✓</Text>
+          <Text style={styles.muted}>{`Nothing expires in ${EXPIRING_SOON_DAYS} days`}</Text>
+        </>
       ) : (
-        urgent.slice(0, MAX_DOCUMENTS_SHOWN).map((r) => {
-          const info = REQUIREMENT_STATUS_INFO[getRequirementStatus(r)];
-          return (
-            <View key={r.id} style={styles.docRow}>
-              <View style={styles.flex}>
-                <Text style={styles.strong}>{r.name}</Text>
-                <Text style={styles.muted}>{expiryCountdown(r)}</Text>
-              </View>
-              <StatusBadge label={info.label} color={info.color} />
-            </View>
-          );
-        })
+        <>
+          <Text style={[styles.bigNumber, { color: hasExpired ? StatusColors.expired : StatusColors.expiring_soon }]}>
+            {urgent.length}
+          </Text>
+          <Text style={styles.muted}>need attention</Text>
+          {urgent.slice(0, MAX_DOCUMENTS_SHOWN).map((r) => (
+            <Text key={r.id} style={styles.small} numberOfLines={2}>
+              <Text style={styles.strong}>{r.name}</Text> · {expiryCountdown(r)}
+            </Text>
+          ))}
+        </>
       )}
-      {urgent.length > MAX_DOCUMENTS_SHOWN ? (
-        <Text style={styles.muted}>{`+${urgent.length - MAX_DOCUMENTS_SHOWN} more need attention`}</Text>
-      ) : null}
-    </Card>
+    </Tile>
   );
 }
 
-// ── Applications by status (FR-H2) ──────────────────────────────────────────
+// ── Applications (FR-H2) ────────────────────────────────────────────────────
 
-function ApplicationsCard({ counts }: { counts: DashboardData['applicationCounts'] }) {
+function ApplicationsTile({ counts }: { counts: DashboardData['applicationCounts'] }) {
   const total = APPLICATION_STATUS_ORDER.reduce((sum, s) => sum + (counts[s] ?? 0), 0);
 
   return (
-    <Card onPress={() => router.push('/applications')} accessibilityLabel="Open applications">
-      <CardTitle icon="paper-plane-outline" title={`Applications (${total})`} />
+    <Tile onPress={() => router.push('/applications')} accessibilityLabel="Open applications">
+      <TileIcon name="paper-plane-outline" />
+      <Text style={styles.tileTitle}>Applications</Text>
+      <Text style={styles.bigNumber}>{total}</Text>
       {total === 0 ? (
-        <FieldHint>No applications yet. Log each job you apply to and the resume you sent.</FieldHint>
+        <Text style={styles.muted}>Log each job you apply to</Text>
       ) : (
         <View style={styles.badges}>
           {APPLICATION_STATUS_ORDER.filter((s) => (counts[s] ?? 0) > 0).map((s) => (
             <StatusBadge
               key={s}
-              label={`${APPLICATION_STATUS_INFO[s].label}: ${counts[s]}`}
+              label={`${APPLICATION_STATUS_INFO[s].label} ${counts[s]}`}
               color={APPLICATION_STATUS_INFO[s].color}
             />
           ))}
         </View>
       )}
-    </Card>
+    </Tile>
   );
 }
 
 // ── OJT progress (FR-H2, only when OJT is set up) ───────────────────────────
 
-function OjtCard({ progress: p }: { progress: OjtProgress }) {
+function OjtTile({ progress: p }: { progress: OjtProgress }) {
   const percent = Math.round(p.progress * 100);
   return (
-    <Card onPress={() => router.push('/ojt' as Href)} accessibilityLabel="Open OJT Logger">
-      <CardTitle icon="time-outline" title="OJT progress" />
-      <Text style={styles.body}>
-        <Text style={styles.strong}>{p.renderedHours}</Text>
-        {` / ${formatHours(p.requiredHours)} · ${percent}%`}
-      </Text>
+    <Tile tone="secondary" onPress={() => router.push('/ojt' as Href)} accessibilityLabel="Open OJT Logger">
+      <View style={styles.ojtHead}>
+        <View style={styles.flex}>
+          <Text style={styles.overline}>OJT PROGRESS</Text>
+          <Text style={styles.ojtHours}>
+            {p.renderedHours}
+            <Text style={styles.muted}>{` / ${formatHours(p.requiredHours)}`}</Text>
+          </Text>
+        </View>
+        <Text style={styles.percent}>{percent}%</Text>
+      </View>
       <ProgressBar
         progress={p.progress}
         color={p.isComplete ? StatusColors.valid : Colors.accent}
         accessibilityLabel={`OJT progress: ${percent} percent`}
       />
-      <Text style={styles.muted}>
+      <Text style={styles.small}>
         {p.isComplete
           ? 'Required hours completed!'
           : p.estimatedEndDate
             ? `Estimated finish: ${formatDate(p.estimatedEndDate)}`
             : 'Log your first day to see an estimated finish date.'}
       </Text>
-    </Card>
+    </Tile>
   );
 }
 
-// ── Small building blocks ───────────────────────────────────────────────────
-
-function CardTitle({ icon, title }: { icon: IconName; title: string }) {
-  return (
-    <View style={styles.cardTitle}>
-      <Ionicons name={icon} size={FontSize.lg} color={Colors.primary} />
-      <Text style={[styles.heading, styles.flex]}>{title}</Text>
-      <Ionicons name="chevron-forward" size={FontSize.lg} color={Colors.mutedText} />
-    </View>
-  );
-}
+// ── Quick actions: three small square tiles ─────────────────────────────────
 
 function QuickAction({ icon, label, href }: { icon: IconName; label: string; href: Href }) {
   return (
-    <Pressable
-      onPress={() => router.push(href)}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      style={({ pressed }) => [styles.quickAction, pressed && styles.pressed]}>
-      <Ionicons name={icon} size={FontSize.xl} color={Colors.primary} />
+    <Tile onPress={() => router.push(href)} accessibilityLabel={label} style={styles.quickTile}>
+      <TileIcon name={icon} />
       <Text style={styles.quickLabel}>{label}</Text>
-    </Pressable>
+    </Tile>
   );
 }
 
@@ -256,15 +265,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   greeting: {
-    fontSize: FontSize.lg,
+    gap: 2,
+  },
+  hello: {
+    fontSize: FontSize.xl,
     fontWeight: FontWeight.semibold,
-    color: Colors.primary,
+    color: Colors.text,
+  },
+  overline: {
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.semibold,
+    letterSpacing: 1,
+    color: Colors.onPrimaryContainer,
   },
   scoreRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.lg,
-    paddingVertical: Spacing.sm,
   },
   score: {
     fontSize: FontSize.xxl,
@@ -274,82 +291,88 @@ const styles = StyleSheet.create({
   scoreLabel: {
     fontSize: FontSize.lg,
     fontWeight: FontWeight.semibold,
+    color: Colors.text,
   },
   suggestion: {
     minHeight: MIN_TOUCH_SIZE,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    paddingHorizontal: Spacing.md,
     borderRadius: Radius.control,
+    backgroundColor: Colors.surface,
   },
   suggestionText: {
     flex: 1,
     fontSize: FontSize.sm,
     color: Colors.text,
   },
-  points: {
-    fontSize: FontSize.sm,
-    fontWeight: FontWeight.semibold,
-    color: Colors.accent,
+  pointsPill: {
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.secondaryContainer,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
   },
-  heading: {
+  points: {
+    fontSize: FontSize.xs,
+    fontWeight: FontWeight.semibold,
+    color: Colors.onSecondaryContainer,
+  },
+  tileTitle: {
     fontSize: FontSize.md,
     fontWeight: FontWeight.semibold,
-    color: Colors.primary,
+    color: Colors.text,
   },
-  cardTitle: {
+  bigNumber: {
+    fontSize: FontSize.xxl,
+    fontWeight: FontWeight.semibold,
+    color: Colors.text,
+  },
+  ojtHead: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
+    alignItems: 'flex-end',
+  },
+  ojtHours: {
+    fontSize: FontSize.xl,
+    fontWeight: FontWeight.semibold,
+    color: Colors.text,
+  },
+  percent: {
+    fontSize: FontSize.xl,
+    fontWeight: FontWeight.semibold,
+    color: Colors.onSecondaryContainer,
   },
   body: {
     fontSize: FontSize.sm,
     color: Colors.text,
   },
-  strong: {
-    fontSize: FontSize.sm,
-    fontWeight: FontWeight.semibold,
+  small: {
+    fontSize: FontSize.xs,
     color: Colors.text,
+  },
+  strong: {
+    fontWeight: FontWeight.semibold,
   },
   muted: {
     fontSize: FontSize.xs,
     color: Colors.mutedText,
   },
-  docRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
   badges: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  quickAction: {
-    flex: 1,
-    minHeight: MIN_TOUCH_SIZE * 2,
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: Spacing.xs,
-    padding: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.control,
-    backgroundColor: Colors.background,
+  },
+  quickTile: {
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
   },
   quickLabel: {
     fontSize: FontSize.xs,
     fontWeight: FontWeight.semibold,
-    color: Colors.primary,
+    color: Colors.text,
     textAlign: 'center',
   },
   pressed: {
-    opacity: 0.6,
+    opacity: 0.7,
   },
 });
