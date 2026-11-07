@@ -1,9 +1,11 @@
+import { MAX_BREAK_MINUTES, MAX_REQUIRED_HOURS } from '@/constants/ojt';
 import { MAX_REMINDER_DAYS } from '@/constants/requirements';
 import type { ApplicationChannel, ApplicationStatus } from '@/types/application';
 import type { ExperienceType } from '@/types/experience';
 import type { RequirementCategory } from '@/types/requirement';
 import type { SkillCategory, SkillLevel } from '@/types/skill';
 import { isEndBeforeStart } from '@/utils/dates';
+import { computeLogHours, timeToMinutes } from '@/utils/ojtHours';
 
 /**
  * Form validation helpers (FR-V3). Pure functions: text in → true/false or error message out.
@@ -239,5 +241,73 @@ export function validateApplication(values: ApplicationFormValues): FormErrors<A
     errors.nextStepDate = 'The next step cannot be before the date you applied';
   }
 
+  return errors;
+}
+
+/** Field values of the OJT Setup form. requiredHours is text while typing (e.g. "486"). */
+export type OjtSetupFormValues = {
+  company: string;
+  supervisor: string;
+  requiredHours: string;
+  startDate: string | null;
+  targetEndDate: string | null;
+};
+
+export function validateOjtSetup(values: OjtSetupFormValues): FormErrors<OjtSetupFormValues> {
+  const errors: FormErrors<OjtSetupFormValues> = {};
+
+  const hours = Number(values.requiredHours.trim());
+  if (values.requiredHours.trim() === '' || !Number.isFinite(hours) || hours <= 0 || hours > MAX_REQUIRED_HOURS) {
+    errors.requiredHours = `Enter the required hours, from 1 to ${MAX_REQUIRED_HOURS}`;
+  }
+  if (isEndBeforeStart(values.startDate, values.targetEndDate)) {
+    errors.targetEndDate = 'Target end date cannot be before the start date';
+  }
+
+  return errors;
+}
+
+/** Field values of the OJT daily log form. Times are "HH:mm"; breakMinutes is text while typing. */
+export type OjtLogFormValues = {
+  logDate: string | null;
+  timeIn: string;
+  timeOut: string;
+  breakMinutes: string;
+  tasks: string;
+};
+
+export function validateOjtLog(values: OjtLogFormValues): FormErrors<OjtLogFormValues> {
+  const errors: FormErrors<OjtLogFormValues> = {};
+
+  if (!values.logDate) errors.logDate = 'Date is required';
+
+  const start = timeToMinutes(values.timeIn);
+  const end = timeToMinutes(values.timeOut);
+  if (start === null) errors.timeIn = 'Time in is required';
+  if (end === null) errors.timeOut = 'Time out is required';
+  else if (start !== null && end <= start) errors.timeOut = 'Time out must be after time in';
+
+  const breakText = values.breakMinutes.trim();
+  const breakMinutes = Number(breakText);
+  if (!/^\d+$/.test(breakText) || breakMinutes > MAX_BREAK_MINUTES) {
+    errors.breakMinutes = `Enter a whole number of minutes, from 0 to ${MAX_BREAK_MINUTES}`;
+  } else if (!errors.timeOut && !errors.timeIn && computeLogHours(values.timeIn, values.timeOut, breakMinutes) === null) {
+    errors.breakMinutes = 'The break is as long as the whole shift';
+  }
+
+  return errors;
+}
+
+/** Field values of the OJT requirement form. */
+export type OjtRequirementFormValues = {
+  name: string;
+  isDone: boolean;
+  dueDate: string | null;
+  notes: string;
+};
+
+export function validateOjtRequirement(values: OjtRequirementFormValues): FormErrors<OjtRequirementFormValues> {
+  const errors: FormErrors<OjtRequirementFormValues> = {};
+  if (values.name.trim() === '') errors.name = 'Requirement name is required';
   return errors;
 }

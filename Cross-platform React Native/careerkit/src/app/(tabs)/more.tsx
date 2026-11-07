@@ -4,7 +4,7 @@ import { Card } from '@/components/Card';
 import { ListItem } from '@/components/ListItem';
 import { Screen } from '@/components/Screen';
 
-/** More tab: Resume Builder now; OJT Logger (2.5) and Settings (3.1) arrive later. */
+/** More tab: Resume Builder and OJT Logger; Settings (3.1) arrives later. */
 export default function MoreScreen() {
   return (
     <Screen scroll edges={['left', 'right']}>
@@ -16,7 +16,12 @@ export default function MoreScreen() {
           // resume/index.tsx opens at /resume; generated route types list it as /resume/index.
           onPress={() => router.push('/resume' as Href)}
         />
-        <ListItem icon="time-outline" title="OJT Logger" subtitle="Coming soon" disabled />
+        <ListItem
+          icon="time-outline"
+          title="OJT Logger"
+          subtitle="Rendered hours, daily time records, OJT requirements"
+          onPress={() => router.push('/ojt' as Href)}
+        />
         <ListItem icon="settings-outline" title="Settings" subtitle="Coming soon" disabled />
       </Card>
     </Screen>

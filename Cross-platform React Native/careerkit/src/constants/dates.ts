@@ -6,3 +6,9 @@ export const DISPLAY_DATE_FORMAT = 'MMM d, yyyy';
 
 /** How dates appear ON THE RESUME: "Jun 2025" (month + year is the resume convention). */
 export const RESUME_DATE_FORMAT = 'MMM yyyy';
+
+/** How times are SAVED (ojt_logs.time_in / time_out): 24-hour "13:30". */
+export const TIME_STORE_FORMAT = 'HH:mm';
+
+/** How times are SHOWN: "1:30 PM". */
+export const TIME_DISPLAY_FORMAT = 'h:mm a';
