@@ -101,7 +101,7 @@ function Slide({ slide, width }: { slide: OnboardingSlide; width: number }) {
       {/* Placeholder illustration: a big tonal circle with the feature's icon. */}
       <View style={[styles.art, { backgroundColor: toneBackground(slide.tone) }]}>
         {slide.icon === 'logo' ? (
-          <AppLogo size={ART_SIZE * 0.6} />
+          <AppLogo size={ART_SIZE * 0.78} />
         ) : (
           <Ionicons name={slide.icon} size={ART_SIZE * 0.4} color={Colors.onPrimaryContainer} />
         )}

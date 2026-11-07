@@ -15,13 +15,13 @@ export type OnboardingSlide = {
 
 /**
  * The intro shown on first launch: what CareerKit is for, then one slide per core feature.
- * The big icons are PLACEHOLDER illustrations; swap them for real artwork later.
+ * Slide 1 shows the real logo; the feature icons are PLACEHOLDER illustrations for now.
  */
 export const ONBOARDING_SLIDES: OnboardingSlide[] = [
   {
     key: 'welcome',
     icon: 'logo',
-    tone: 'primary',
+    tone: 'surface', // white circle: the glass logo reads best on white
     title: 'Welcome to CareerKit',
     body: 'Your offline career companion, from your first OJT to your first job.',
     points: ['No account and no internet needed', 'Everything stays private on your phone', 'Made for Filipino students and job seekers'],

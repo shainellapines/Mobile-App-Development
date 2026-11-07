@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { Animated, StyleSheet, Text } from 'react-native';
 
 import { AppLogo } from '@/components/AppLogo';
-import { Colors, FontSize, FontWeight, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Spacing } from '@/constants/theme';
 
 /** How long the branded splash stays before fading out, and how long the fade takes. */
 const SPLASH_MIN_MS = 1200;
 const FADE_MS = 400;
-const LOGO_SIZE = 140;
+const LOGO_WIDTH = 200; // same width as the native splash image in app.json
 
 // Keep the phone's native splash up until our own (identical-looking) splash is drawn.
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -19,7 +19,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
  * Branded splash screen, shown once when the app starts.
  * 1. The native splash (logo on the light background, set in app.json) shows while the app loads.
  * 2. As soon as this component appears, it hides the native splash. It looks the same, plus the
- *    app name and tagline, so the switch is invisible.
+ *    tagline, so the switch is seamless.
  * 3. After SPLASH_MIN_MS it fades out, revealing the app (or the lock screen) underneath.
  */
 export function SplashOverlay() {
@@ -41,8 +41,8 @@ export function SplashOverlay() {
 
   return (
     <Animated.View style={[styles.cover, { opacity }]} pointerEvents="none">
-      <AppLogo size={LOGO_SIZE} />
-      <Text style={styles.name}>CareerKit</Text>
+      {/* The full logo already contains the "CareerKit" name. */}
+      <AppLogo size={LOGO_WIDTH} variant="full" />
       <Text style={styles.tagline}>From OJT to your first job</Text>
     </Animated.View>
   );
@@ -59,11 +59,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-  },
-  name: {
-    fontSize: FontSize.xxl,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
   },
   tagline: {
     fontSize: FontSize.md,
