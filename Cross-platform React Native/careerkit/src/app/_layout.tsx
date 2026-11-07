@@ -6,7 +6,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { AppLockGate } from '@/components/AppLockGate';
 import { SplashOverlay } from '@/components/SplashOverlay';
-import { Colors, FontWeight } from '@/constants/theme';
+import { Colors, FontSize, FontWeight } from '@/constants/theme';
 import { DATABASE_NAME, initDatabase } from '@/db/client';
 import { initNotifications } from '@/services/notificationService';
 
@@ -39,7 +39,8 @@ export default function RootLayout() {
                 // Clean minimal header: same color as the screen, dark text, no shadow line.
                 headerStyle: { backgroundColor: Colors.background },
                 headerTintColor: Colors.text,
-                headerTitleStyle: { fontWeight: FontWeight.semibold },
+                headerTitleStyle: { fontWeight: FontWeight.semibold, fontSize: FontSize.lg },
+                headerTitleAlign: 'left', // MD3: titles sit on the left, next to the back arrow
                 headerShadowVisible: false,
                 contentStyle: { backgroundColor: Colors.background },
               }}>

@@ -17,15 +17,18 @@ type AppLogoProps = {
   /** Width in points (the height follows the logo's shape). */
   size: number;
   variant?: 'mark' | 'full';
+  /** Called once the image has been drawn (the splash waits for this before timing). */
+  onLoad?: () => void;
 };
 
-export function AppLogo({ size, variant = 'mark' }: AppLogoProps) {
+export function AppLogo({ size, variant = 'mark', onLoad }: AppLogoProps) {
   const isFull = variant === 'full';
   return (
     <Image
       source={isFull ? FULL : MARK}
       style={{ width: size, height: isFull ? size / FULL_ASPECT : size }}
       contentFit="contain"
+      onLoad={onLoad}
       accessibilityLabel="CareerKit logo"
     />
   );
