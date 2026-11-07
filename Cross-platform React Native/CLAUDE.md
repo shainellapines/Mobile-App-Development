@@ -526,6 +526,7 @@ Shape, spacing and type:
 
 ### 8.3 UX rules
 - Bottom tabs: **Home, Vault, Requirements, Applications, More**.
+- **Startup:** branded splash (logo, name, tagline) → on first launch only, **onboarding slides** (welcome + one slide per core feature) → app. "View intro again" is in Settings. The logo `assets/images/careerkit-logo.png` is a **temporary placeholder**; replace that one file to rebrand.
 - Every list: FAB to add, tap to view/edit, delete with confirmation, empty state.
 - Show loading indicators for PDF generation and file operations; show success feedback (toast/snackbar or alert).
 - Touch targets at least 44×44; readable contrast; labels on all inputs.
@@ -597,6 +598,7 @@ Work top to bottom. Check items off as they are completed.
 - [x] 3.2 `modern` resume template
 - [x] 3.3 Search/filters polish (FR-V5), interview reminders (FR-A5), OJT DTR PDF (FR-O5)
 - [ ] 3.4 UI polish pass: consistency check on every screen, loading/success states, app icon & splash screen
+  - Done so far: MD3 + bento + minimal design, splash screen, onboarding (placeholder logo/art). Remaining: final logo, app icon, consistency check.
 - [ ] 3.5 Seed **demo data** script (a sample student profile) for the presentation video
 - [ ] 3.6 Final test on a real Android **and** iOS device (or emulator)
 

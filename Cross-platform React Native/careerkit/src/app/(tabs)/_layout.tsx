@@ -1,9 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Colors, FontWeight, Radius, Spacing } from '@/constants/theme';
+import { useOnboardingDone } from '@/hooks/useOnboarding';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -40,6 +41,11 @@ function TabIcon({ active, inactive, focused, size }: TabIconProps) {
  * "route group": it organizes files without adding "/tabs" to the URL.
  */
 export default function TabsLayout() {
+  // First launch: show the intro slides before the app (the splash covers this short check).
+  const onboardingDone = useOnboardingDone();
+  if (onboardingDone === null) return null;
+  if (!onboardingDone) return <Redirect href="/onboarding" />;
+
   return (
     <Tabs
       screenOptions={{

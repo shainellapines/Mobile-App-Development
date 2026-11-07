@@ -136,6 +136,12 @@ export default function SettingsScreen() {
             ? `Database schema v${dbInfo.schemaVersion} · ${dbInfo.tableCount} tables · foreign keys ${dbInfo.foreignKeysOn ? 'on' : 'off'}`
             : ''}
         </Text>
+        <Button
+          title="View intro again"
+          icon="play-circle-outline"
+          variant="secondary"
+          onPress={() => router.push({ pathname: '/onboarding', params: { replay: '1' } })}
+        />
         <FieldHint>
           Offline and private: no account, no internet, nothing is uploaded. Supports UN SDG 8 — Decent Work
           and Economic Growth.

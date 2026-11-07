@@ -28,9 +28,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#F1F5F9",
+          "image": "./assets/images/careerkit-logo.png",
+          "imageWidth": 140
         }
       ],
       "expo-sqlite",
