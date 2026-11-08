@@ -1,3 +1,4 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -7,6 +8,7 @@ import { Card } from '@/components/Card';
 import { EntryFormShell } from '@/components/EntryFormShell';
 import { FieldHint } from '@/components/FieldHint';
 import { Screen } from '@/components/Screen';
+import { SectionTitle } from '@/components/SectionTitle';
 import { StatusBadge } from '@/components/StatusBadge';
 import { APPLICATION_STATUS_INFO, APPLICATION_STATUS_ORDER } from '@/constants/applications';
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing } from '@/constants/theme';
@@ -62,7 +64,7 @@ function ApplicationDetails({ application: a, onChangeStatus }: DetailsProps) {
 
       {/* Quick status change (FR-A2): one tap moves the application along the pipeline. */}
       <Card>
-        <Text style={styles.heading}>Update status</Text>
+        <SectionTitle title="Update status" />
         <View style={styles.statusGrid}>
           {APPLICATION_STATUS_ORDER.map((status) => {
             const s = APPLICATION_STATUS_INFO[status];
@@ -80,6 +82,8 @@ function ApplicationDetails({ application: a, onChangeStatus }: DetailsProps) {
                   selected && { backgroundColor: s.color },
                   pressed && styles.pressed,
                 ]}>
+                {/* Same as the MD3 filter chips: a check mark marks the current status. */}
+                {selected ? <Ionicons name="checkmark" size={FontSize.md} color={Colors.onPrimary} /> : null}
                 <Text style={[styles.statusText, { color: selected ? Colors.onPrimary : s.color }]}>{s.label}</Text>
               </Pressable>
             );
@@ -128,7 +132,7 @@ function ResumeSentCard({ resumeId }: { resumeId: number | null }) {
 
   return (
     <Card>
-      <Text style={styles.heading}>Resume sent</Text>
+      <SectionTitle title="Resume sent" />
       {resumeId === null ? (
         <FieldHint>No resume linked. Edit the application to choose the version you sent.</FieldHint>
       ) : loading ? null : !resume ? (
@@ -171,11 +175,6 @@ const styles = StyleSheet.create({
     fontWeight: FontWeight.semibold,
     color: Colors.text,
   },
-  heading: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
-  },
   body: {
     fontSize: FontSize.sm,
     color: Colors.text,
@@ -194,9 +193,11 @@ const styles = StyleSheet.create({
   },
   statusChip: {
     minHeight: MIN_TOUCH_SIZE,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
-    borderRadius: Radius.pill,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.chip,
     borderWidth: 1,
     backgroundColor: Colors.surface,
   },

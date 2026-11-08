@@ -1,12 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ComponentProps, ReactNode } from 'react';
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import type { Edge } from 'react-native-safe-area-context';
 
 import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { FAB } from '@/components/FAB';
+import { LoadingView } from '@/components/LoadingView';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { Colors, FontSize, FontWeight, Spacing } from '@/constants/theme';
@@ -70,9 +71,7 @@ export function EntryListScreen<T extends { id: number }>({
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <LoadingView />
     );
   }
 
@@ -151,12 +150,6 @@ export function EntryListScreen<T extends { id: number }>({
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-  },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
   },
   list: {
     padding: Spacing.lg,

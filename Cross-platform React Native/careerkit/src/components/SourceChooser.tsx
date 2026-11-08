@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
   },
   sheet: {
     backgroundColor: Colors.surface,
-    borderTopLeftRadius: Radius.card,
-    borderTopRightRadius: Radius.card,
+    borderTopLeftRadius: Radius.tile, // MD3 bottom sheet
+    borderTopRightRadius: Radius.tile,
     padding: Spacing.lg,
     paddingBottom: Spacing.xxl,
     gap: Spacing.xs,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.control,
   },
   pressed: {
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.primaryContainer,
   },
   optionText: {
     fontSize: FontSize.md,

@@ -1,9 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, type Href } from 'expo-router';
 import type { ComponentProps } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FieldHint } from '@/components/FieldHint';
+import { LoadingView } from '@/components/LoadingView';
 import { ProgressBar } from '@/components/ProgressBar';
 import { ProgressRing } from '@/components/ProgressRing';
 import { Screen } from '@/components/Screen';
@@ -58,9 +59,7 @@ export default function DashboardScreen() {
 
   if (loading || !data || !readiness) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <LoadingView />
     );
   }
 
@@ -255,12 +254,6 @@ function QuickAction({ icon, label, href }: { icon: IconName; label: string; hre
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
-  },
   flex: {
     flex: 1,
   },

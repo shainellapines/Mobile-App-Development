@@ -8,6 +8,7 @@ import { Card } from '@/components/Card';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { FieldHint } from '@/components/FieldHint';
 import { ImageViewer } from '@/components/ImageViewer';
+import { SectionTitle } from '@/components/SectionTitle';
 import { afterModalCloses, SourceChooser } from '@/components/SourceChooser';
 import { MAX_FILE_MB } from '@/constants/files';
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing } from '@/constants/theme';
@@ -35,7 +36,7 @@ export function AttachmentPicker({ ownerType, ownerId }: AttachmentPickerProps) 
   if (ownerId === undefined) {
     return (
       <Card>
-        <Text style={styles.heading}>Attachments</Text>
+        <SectionTitle title="Attachments" />
         <FieldHint>Save this entry first, then you can attach files (certificates, photos, PDFs).</FieldHint>
       </Card>
     );
@@ -106,7 +107,7 @@ function AttachmentList({ ownerType, ownerId }: { ownerType: AttachmentOwnerType
 
   return (
     <Card>
-      <Text style={styles.heading}>Attachments</Text>
+      <SectionTitle title="Attachments" />
 
       {loading ? <ActivityIndicator color={Colors.primary} /> : null}
       {!loading && items.length === 0 ? (
@@ -201,11 +202,6 @@ function IconButton({ icon, label, onPress, color = Colors.mutedText }: IconButt
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -225,7 +221,7 @@ const styles = StyleSheet.create({
     width: THUMB_SIZE,
     height: THUMB_SIZE,
     borderRadius: Radius.control,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surfaceContainer,
   },
   fileIcon: {
     alignItems: 'center',

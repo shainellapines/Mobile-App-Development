@@ -1,10 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { Card } from '@/components/Card';
 import { Checkbox } from '@/components/Checkbox';
 import { FieldHint } from '@/components/FieldHint';
-import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE } from '@/constants/theme';
+import { SectionTitle } from '@/components/SectionTitle';
+import { Colors, FontSize, MIN_TOUCH_SIZE } from '@/constants/theme';
 
 type ResumeSectionPickerProps<T extends { id: number }> = {
   title: string;
@@ -43,9 +44,7 @@ export function ResumeSectionPicker<T extends { id: number }>({
 
   return (
     <Card>
-      <Text style={styles.title}>
-        {title} <Text style={styles.count}>({selected.length} of {items.length})</Text>
-      </Text>
+      <SectionTitle title={title} note={`(${selected.length} of ${items.length})`} />
 
       {items.length === 0 ? <FieldHint>{`No ${title.toLowerCase()} in your vault yet.`}</FieldHint> : null}
 
@@ -110,16 +109,6 @@ function MoveButton({ icon, label, disabled, onPress }: MoveButtonProps) {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
-  },
-  count: {
-    fontSize: FontSize.sm,
-    fontWeight: FontWeight.regular,
-    color: Colors.mutedText,
-  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

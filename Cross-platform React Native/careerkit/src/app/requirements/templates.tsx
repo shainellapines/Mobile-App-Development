@@ -1,15 +1,16 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Checkbox } from '@/components/Checkbox';
 import { FieldHint } from '@/components/FieldHint';
+import { LoadingView } from '@/components/LoadingView';
 import { Screen } from '@/components/Screen';
+import { SectionTitle } from '@/components/SectionTitle';
 import { Select, type SelectOption } from '@/components/Select';
 import { REQUIREMENT_TEMPLATES, VALIDITY_DISCLAIMER, type TemplateSet } from '@/constants/requirementTemplates';
-import { Colors, FontSize, FontWeight } from '@/constants/theme';
 import { useRequirementTemplates } from '@/hooks/useRequirementTemplates';
 import { useRequirements } from '@/hooks/useRequirements';
 import { sameDocumentName, validityLabel } from '@/utils/requirementTemplates';
@@ -30,9 +31,7 @@ export default function RequirementTemplatesScreen() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <LoadingView />
     );
   }
   return <TemplatePicker existingNames={items.map((r) => r.name)} />;
@@ -80,7 +79,7 @@ function TemplatePicker({ existingNames }: { existingNames: string[] }) {
       </Card>
 
       <Card>
-        <Text style={styles.heading}>Common documents</Text>
+        <SectionTitle title="Common documents" />
         {REQUIREMENT_TEMPLATES[set].map((template) => {
           const exists = alreadyAdded(template.name);
           return (
@@ -114,16 +113,3 @@ function TemplatePicker({ existingNames }: { existingNames: string[] }) {
   );
 }
 
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
-  },
-  heading: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
-  },
-});

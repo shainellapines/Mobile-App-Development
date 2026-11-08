@@ -1,13 +1,14 @@
 import { router } from 'expo-router';
 import { useState, type ReactNode } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { LoadingView } from '@/components/LoadingView';
 import { ProfilePhotoPicker } from '@/components/ProfilePhotoPicker';
 import { Screen } from '@/components/Screen';
+import { SectionTitle } from '@/components/SectionTitle';
 import { TextField } from '@/components/TextField';
-import { Colors, FontSize, FontWeight } from '@/constants/theme';
 import { useProfile } from '@/hooks/useProfile';
 import type { Profile, ProfileInput } from '@/types/profile';
 import { emptyToNull, validateProfile, type ProfileFormValues } from '@/utils/validators';
@@ -46,9 +47,7 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <LoadingView />
     );
   }
 
@@ -121,7 +120,7 @@ function ProfileForm({ initial, onSave, children }: ProfileFormProps) {
       <Card>{children}</Card>
 
       <Card>
-        <Text style={styles.section}>Basic info</Text>
+        <SectionTitle title="Basic info" />
         <TextField
           label="Full name"
           required
@@ -140,7 +139,7 @@ function ProfileForm({ initial, onSave, children }: ProfileFormProps) {
       </Card>
 
       <Card>
-        <Text style={styles.section}>Contact</Text>
+        <SectionTitle title="Contact" />
         <TextField
           label="Email"
           placeholder="juan@email.com"
@@ -168,7 +167,7 @@ function ProfileForm({ initial, onSave, children }: ProfileFormProps) {
       </Card>
 
       <Card>
-        <Text style={styles.section}>About you</Text>
+        <SectionTitle title="About you" />
         <TextField
           label="Professional summary"
           placeholder="2–3 sentences about your skills and the role you want."
@@ -179,7 +178,7 @@ function ProfileForm({ initial, onSave, children }: ProfileFormProps) {
       </Card>
 
       <Card>
-        <Text style={styles.section}>Links</Text>
+        <SectionTitle title="Links" />
         <TextField
           label="LinkedIn"
           placeholder="linkedin.com/in/juandelacruz"
@@ -207,16 +206,3 @@ function ProfileForm({ initial, onSave, children }: ProfileFormProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
-  },
-  section: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
-  },
-});

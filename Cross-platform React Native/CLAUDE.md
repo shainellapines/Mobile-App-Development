@@ -522,7 +522,7 @@ Shape, spacing and type:
 - Dark mode is optional (Phase 3).
 
 ### 8.2 Shared components (`src/components/`)
-`Screen` (safe area + padding), `Header`, `Card`, `Tile` + `BentoRow` (bento grid), `Button` (primary/secondary/danger), `TextField` (label + error), `DateField`, `Select`, `Checkbox`, `StatusBadge`, `EmptyState`, `ListItem`, `ProgressRing`, `ProgressBar`, `ConfirmDialog`, `FAB` (floating add button), `AttachmentPicker`.
+`Screen` (safe area + padding), `Header`, `Card`, `SectionTitle` (every card heading), `LoadingView` (every loading state), `Tile` + `BentoRow` (bento grid), `Button` (primary/secondary/danger), `TextField` (label + error), `DateField`, `Select`, `Checkbox`, `StatusBadge`, `EmptyState`, `ListItem`, `ProgressRing`, `ProgressBar`, `ConfirmDialog`, `FAB` (floating add button), `AttachmentPicker`.
 
 ### 8.3 UX rules
 - Bottom tabs: **Home, Vault, Requirements, Applications, More**.
@@ -602,8 +602,8 @@ Work top to bottom. Check items off as they are completed.
 - [x] 3.1 App Lock with PIN + biometrics; Reset all data (FR-L1–L3)
 - [x] 3.2 `modern` resume template
 - [x] 3.3 Search/filters polish (FR-V5), interview reminders (FR-A5), OJT DTR PDF (FR-O5)
-- [ ] 3.4 UI polish pass: consistency check on every screen, loading/success states, app icon & splash screen
-  - Done so far: MD3 + bento + minimal design, splash screen, onboarding (placeholder logo/art). Final logo + app icon applied. Remaining: consistency check.
+- [x] 3.4 UI polish pass: consistency check on every screen, loading/success states, app icon & splash screen
+  - Done so far: MD3 + bento + minimal design, splash screen, onboarding (placeholder logo/art). Final logo + app icon applied. Consistency check done: shared `SectionTitle` and `LoadingView`, MD3 shapes on chips, dialogs and sheets, tonal empty states.
 - [ ] 3.5 Seed **demo data** script (a sample student profile) for the presentation video
 - [ ] 3.6 Final test on a real Android **and** iOS device (or emulator)
 

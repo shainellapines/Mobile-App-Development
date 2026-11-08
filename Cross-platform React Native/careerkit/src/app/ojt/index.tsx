@@ -1,15 +1,17 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Checkbox } from '@/components/Checkbox';
 import { EmptyState } from '@/components/EmptyState';
 import { FieldHint } from '@/components/FieldHint';
+import { LoadingView } from '@/components/LoadingView';
 import { ProgressBar } from '@/components/ProgressBar';
 import { Screen } from '@/components/Screen';
+import { SectionTitle } from '@/components/SectionTitle';
 import { DEFAULT_REQUIRED_HOURS, RECENT_LOGS_SHOWN } from '@/constants/ojt';
 import { Colors, FontSize, FontWeight, MIN_TOUCH_SIZE, Radius, Spacing, StatusColors } from '@/constants/theme';
 import { useDtrExport, useOjtInfo, useOjtLogs, useOjtRequirements } from '@/hooks/useOjt';
@@ -26,9 +28,7 @@ export default function OjtOverviewScreen() {
 
   if (infoLoading || logs.loading || requirements.loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <LoadingView />
     );
   }
 
@@ -76,7 +76,7 @@ function ProgressCard({ info, logs }: { info: OjtInfo; logs: OjtLog[] }) {
     <Card>
       <View style={styles.titleRow}>
         <View style={styles.flex}>
-          <Text style={styles.heading}>{info.company ?? 'My OJT'}</Text>
+          <SectionTitle title={info.company ?? 'My OJT'} />
           {info.supervisor ? <Text style={styles.muted}>Supervisor: {info.supervisor}</Text> : null}
         </View>
         <SmallIconButton icon="create-outline" label="Edit OJT setup" onPress={() => router.push('/ojt/setup')} />
@@ -139,7 +139,7 @@ function LogsCard({ logs }: { logs: OjtLog[] }) {
 
   return (
     <Card>
-      <Text style={styles.heading}>Daily time records</Text>
+      <SectionTitle title="Daily time records" />
       <Button
         title={loggedToday ? 'Add another time record' : "Log today's hours"}
         icon="add"
@@ -202,7 +202,7 @@ function ChecklistCard({ items, onToggle }: ChecklistProps) {
 
   return (
     <Card>
-      <Text style={styles.heading}>{`OJT requirements (${doneCount}/${items.length} done)`}</Text>
+      <SectionTitle title="OJT requirements" note={`${doneCount}/${items.length} done`} />
       {items.length > 0 ? (
         <ProgressBar
           progress={doneCount / items.length}
@@ -256,12 +256,6 @@ function SmallIconButton({
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
-  },
   flex: {
     flex: 1,
   },
@@ -269,11 +263,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
-  },
-  heading: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
   },
   bigNumber: {
     fontSize: FontSize.xxl,

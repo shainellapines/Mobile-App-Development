@@ -1,10 +1,9 @@
 import { Stack } from 'expo-router';
 import type { ReactNode } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
+import { LoadingView } from '@/components/LoadingView';
 import { Screen } from '@/components/Screen';
-import { Colors } from '@/constants/theme';
 
 type EntryFormShellProps = {
   /** Header title, e.g. "Add Education" or "Edit Education". */
@@ -22,9 +21,7 @@ export function EntryFormShell({ title, loading, notFound, children }: EntryForm
     <>
       <Stack.Screen options={{ title }} />
       {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
+        <LoadingView />
       ) : notFound ? (
         <Screen>
           <EmptyState icon="alert-circle-outline" title="Entry not found" message="It may have been deleted." />
@@ -35,12 +32,3 @@ export function EntryFormShell({ title, loading, notFound, children }: EntryForm
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
-  },
-});

@@ -48,7 +48,7 @@ export function ProfilePhotoPicker({ photoPath, onChange, onRemove }: ProfilePho
             accessibilityLabel="Profile photo"
           />
         ) : (
-          <Ionicons name="person" size={PHOTO_SIZE / 2} color={Colors.mutedText} />
+          <Ionicons name="person" size={PHOTO_SIZE / 2} color={Colors.onPrimaryContainer} />
         )}
       </View>
 
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     width: PHOTO_SIZE,
     height: PHOTO_SIZE,
     borderRadius: PHOTO_SIZE / 2,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',

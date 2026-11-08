@@ -2,9 +2,10 @@ import { Stack } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
 import { Suspense, useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { AppLockGate } from '@/components/AppLockGate';
+import { LoadingView } from '@/components/LoadingView';
 import { SplashOverlay } from '@/components/SplashOverlay';
 import { Colors, FontSize, FontWeight } from '@/constants/theme';
 import { DATABASE_NAME, initDatabase } from '@/db/client';
@@ -32,7 +33,7 @@ export default function RootLayout() {
     <View style={styles.root}>
       <AppLockGate>
         <StatusBar style="dark" />
-        <Suspense fallback={<LoadingScreen />}>
+        <Suspense fallback={<LoadingView />}>
           <SQLiteProvider databaseName={DATABASE_NAME} onInit={initDatabase} useSuspense>
             <Stack
               screenOptions={{
@@ -68,22 +69,8 @@ export default function RootLayout() {
   );
 }
 
-function LoadingScreen() {
-  return (
-    <View style={styles.loading}>
-      <ActivityIndicator size="large" color={Colors.primary} />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
   },
 });

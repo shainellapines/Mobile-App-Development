@@ -1,17 +1,19 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { Checkbox } from '@/components/Checkbox';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { FieldHint } from '@/components/FieldHint';
+import { LoadingView } from '@/components/LoadingView';
 import { Screen } from '@/components/Screen';
+import { SectionTitle } from '@/components/SectionTitle';
 import { afterModalCloses } from '@/components/SourceChooser';
 import { StatusBadge } from '@/components/StatusBadge';
-import { Colors, FontSize, FontWeight, StatusColors } from '@/constants/theme';
+import { Colors, FontSize, StatusColors } from '@/constants/theme';
 import { useSettings } from '@/hooks/useSettings';
 import { authenticateWithBiometrics } from '@/services/authService';
 
@@ -26,9 +28,7 @@ export default function SettingsScreen() {
 
   if (!state) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <LoadingView />
     );
   }
 
@@ -67,13 +67,15 @@ export default function SettingsScreen() {
   return (
     <Screen scroll>
       <Card>
-        <View style={styles.titleRow}>
-          <Text style={[styles.heading, styles.flex]}>App Lock</Text>
-          <StatusBadge
-            label={lockEnabled ? 'On' : 'Off'}
-            color={lockEnabled ? StatusColors.valid : StatusColors.not_yet_obtained}
-          />
-        </View>
+        <SectionTitle
+          title="App Lock"
+          right={
+            <StatusBadge
+              label={lockEnabled ? 'On' : 'Off'}
+              color={lockEnabled ? StatusColors.valid : StatusColors.not_yet_obtained}
+            />
+          }
+        />
         <FieldHint>
           Asks for a PIN when CareerKit opens, and when you come back after 1 minute away.
         </FieldHint>
@@ -114,7 +116,7 @@ export default function SettingsScreen() {
       </Card>
 
       <Card>
-        <Text style={styles.heading}>Data</Text>
+        <SectionTitle title="Data" />
         <FieldHint>
           Deletes your profile, vault, attachments, resumes, requirements, applications, OJT records,
           reminders and PIN from this phone. This cannot be undone.
@@ -129,7 +131,7 @@ export default function SettingsScreen() {
       </Card>
 
       <Card>
-        <Text style={styles.heading}>About</Text>
+        <SectionTitle title="About" />
         <Text style={styles.body}>{`CareerKit v${Constants.expoConfig?.version ?? '1.0.0'}`}</Text>
         <Text style={styles.muted}>
           {dbInfo
@@ -172,24 +174,6 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: Colors.background,
-  },
-  flex: {
-    flex: 1,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  heading: {
-    fontSize: FontSize.md,
-    fontWeight: FontWeight.semibold,
-    color: Colors.primary,
-  },
   body: {
     fontSize: FontSize.sm,
     color: Colors.text,

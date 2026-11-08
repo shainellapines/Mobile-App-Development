@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
     backgroundColor: Colors.surface,
-    borderRadius: Radius.card,
+    borderRadius: Radius.tile, // MD3 dialogs have extra-large corners
     padding: Spacing.xl,
     gap: Spacing.md,
   },

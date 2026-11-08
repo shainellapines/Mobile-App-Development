@@ -3,7 +3,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
-import { Colors, FontSize, FontWeight, Spacing } from '@/constants/theme';
+import { Colors, FontSize, FontWeight, Radius, Spacing } from '@/constants/theme';
 
 type EmptyStateProps = {
   icon: ComponentProps<typeof Ionicons>['name'];
@@ -20,7 +20,9 @@ type EmptyStateProps = {
 export function EmptyState({ icon, title, message, actionLabel, onAction, children }: EmptyStateProps) {
   return (
     <View style={styles.container}>
-      <Ionicons name={icon} size={FontSize.xxl * 2} color={Colors.mutedText} />
+      <View style={styles.iconCircle}>
+        <Ionicons name={icon} size={FontSize.xxl + Spacing.sm} color={Colors.onPrimaryContainer} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       {message ? <Text style={styles.message}>{message}</Text> : null}
       {actionLabel && onAction ? (
@@ -31,7 +33,17 @@ export function EmptyState({ icon, title, message, actionLabel, onAction, childr
   );
 }
 
+const ICON_CIRCLE = 96;
+
 const styles = StyleSheet.create({
+  iconCircle: {
+    width: ICON_CIRCLE,
+    height: ICON_CIRCLE,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
