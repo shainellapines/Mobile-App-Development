@@ -604,7 +604,10 @@ Work top to bottom. Check items off as they are completed.
 - [x] 3.3 Search/filters polish (FR-V5), interview reminders (FR-A5), OJT DTR PDF (FR-O5)
 - [x] 3.4 UI polish pass: consistency check on every screen, loading/success states, app icon & splash screen
   - Done so far: MD3 + bento + minimal design, splash screen, onboarding (placeholder logo/art). Final logo + app icon applied. Consistency check done: shared `SectionTitle` and `LoadingView`, MD3 shapes on chips, dialogs and sheets, tonal empty states.
-- [ ] 3.5 Seed **demo data** script (a sample student profile) for the presentation video
+- [x] 3.5 Seed **demo data** script (a sample student profile) for the presentation video
+  - **Settings → Load demo data** replaces all data with "Juan Dela Cruz" (BSIT). The PIN is kept.
+  - The data is in `src/utils/demoData.ts` and is written by `src/db/repositories/demoRepo.ts`.
+  - Dates are relative to the load day, so the statuses never go stale: Police Clearance is expired, Barangay Clearance is expiring soon, the score is 85 with "Renew your expired Police Clearance", and the interview is in 2 days.
 - [ ] 3.6 Final test on a real Android **and** iOS device (or emulator)
 
 ---
@@ -625,6 +628,8 @@ Each member should be able to explain: the screens in their module, the tables t
 ---
 
 ## 13. Demo Scenario (for the system demonstration)
+
+> Tip: for a smooth video, use **Settings → Load demo data** first. Then do steps 4–7 live on top of it. For example, renew the expired Police Clearance, and the score goes from 85 to 100, "Job-ready!".
 
 1. Open the app → (unlock) → Dashboard shows a low Readiness Score with suggestions.
 2. Fill in Profile, add Education, an OJT Experience, 2 Projects, Skills, and a Certification with an attached image.

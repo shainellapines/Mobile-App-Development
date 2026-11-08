@@ -20,17 +20,15 @@ import { authenticateWithBiometrics } from '@/services/authService';
 /** Which reset confirmation is showing: the first, the second ("are you really sure?"), or none. */
 type ResetStep = 'first' | 'second' | null;
 
-/** Settings (FR-L1–L3): App Lock, Reset all data, About. */
+/** Settings (FR-L1–L3): App Lock, Demo data, Reset all data, About. */
 export default function SettingsScreen() {
-  const { state, toggleBiometrics, resetAllData } = useSettings();
+  const { state, toggleBiometrics, resetAllData, loadDemoData } = useSettings();
   const [resetStep, setResetStep] = useState<ResetStep>(null);
   const [resetting, setResetting] = useState(false);
+  const [demoConfirm, setDemoConfirm] = useState(false);
+  const [loadingDemo, setLoadingDemo] = useState(false);
 
-  if (!state) {
-    return (
-      <LoadingView />
-    );
-  }
+  if (!state) return <LoadingView />;
 
   const { lockEnabled, biometricsEnabled, biometric, dbInfo } = state;
 
@@ -61,6 +59,25 @@ export default function SettingsScreen() {
       Alert.alert('Could not reset', 'Something went wrong while deleting your data. Please try again.');
     } finally {
       setResetting(false);
+    }
+  };
+
+  const handleLoadDemo = () => {
+    setDemoConfirm(false);
+    afterModalCloses(runLoadDemo);
+  };
+
+  const runLoadDemo = async () => {
+    setLoadingDemo(true);
+    try {
+      await loadDemoData();
+      Alert.alert('Demo data loaded', 'Juan Dela Cruz, a sample BSIT student, is ready on the Dashboard.');
+      router.replace('/');
+    } catch (e) {
+      console.warn('[settings] demo load failed', e);
+      Alert.alert('Could not load demo', 'Something went wrong. Please try again.');
+    } finally {
+      setLoadingDemo(false);
     }
   };
 
@@ -115,6 +132,23 @@ export default function SettingsScreen() {
         )}
       </Card>
 
+      {/* Step 3.5: one tap fills the app with a realistic sample student for the presentation. */}
+      <Card>
+        <SectionTitle title="Demo data" />
+        <FieldHint>
+          Fills CareerKit with a sample BSIT student: profile, vault, a resume, requirements (one expired), OJT
+          hours and applications. Replaces everything you saved. Your PIN stays.
+        </FieldHint>
+        <Button
+          title="Load demo data"
+          icon="sparkles-outline"
+          variant="secondary"
+          loading={loadingDemo}
+          disabled={resetting}
+          onPress={() => setDemoConfirm(true)}
+        />
+      </Card>
+
       <Card>
         <SectionTitle title="Data" />
         <FieldHint>
@@ -149,6 +183,16 @@ export default function SettingsScreen() {
           and Economic Growth.
         </FieldHint>
       </Card>
+
+      <ConfirmDialog
+        visible={demoConfirm}
+        title="Load demo data?"
+        message="Everything currently saved in CareerKit will be replaced by the sample student."
+        confirmLabel="Load demo"
+        destructive
+        onCancel={() => setDemoConfirm(false)}
+        onConfirm={handleLoadDemo}
+      />
 
       {/* FR-L3: double confirmation before deleting everything. */}
       <ConfirmDialog
