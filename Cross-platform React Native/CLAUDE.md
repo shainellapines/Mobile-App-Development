@@ -608,7 +608,7 @@ Work top to bottom. Check items off as they are completed.
   - **Settings → Load demo data** replaces all data with "Juan Dela Cruz" (BSIT). The PIN is kept.
   - The data is in `src/utils/demoData.ts` and is written by `src/db/repositories/demoRepo.ts`.
   - Dates are relative to the load day, so the statuses never go stale: Police Clearance is expired, Barangay Clearance is expiring soon, the score is 85 with "Renew your expired Police Clearance", and the interview is in 2 days.
-- [ ] 3.6 Final test on a real Android **and** iOS device (or emulator)
+- [x] 3.6 Final test on a real Android **and** iOS device (or emulator)
   - Follow the checklist in `TESTING.md` (every module, App Lock, offline, and the full demo run-through) and record bugs in its Bug Log.
 
 ---
