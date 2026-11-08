@@ -101,57 +101,86 @@ npx tsc --noEmit                          # type check
 
 ## 4. Folder Structure
 
-> **Actual location:** the app lives in `careerkit/`. The Expo SDK 58 template puts routes in `src/app/` (not root `app/`), so everything below sits under `careerkit/src/`. Import with the `@/` alias (e.g., `@/components/Button`).
+> The app lives in `careerkit/`. The Expo SDK 58 template puts routes in `src/app/`, so all code sits under `careerkit/src/`. Import with the `@/` alias (e.g., `@/components/Button`); `@/assets/...` points to `careerkit/assets/`.
+
+**Changes from the original plan, and why:**
+- **One folder per vault category instead of `vault/[category]/`.**
+  - Each category has different fields, so each needs its own form.
+  - The list screens all reuse the shared `EntryListScreen`.
+  - Separate routes also get fully typed links from Expo Router.
+- **`settings/` is a folder**, because it holds two screens: Settings and the PIN screen.
+- **`ojt/` has extra screens:** `logs` (all time records) and `requirement-form` (the OJT checklist items).
+- **`onboarding.tsx` is new.** It shows the intro slides on first launch.
 
 ```
 careerkit/
-├── app/                          # Expo Router screens
-│   ├── _layout.tsx               # root layout: DB init, theme, lock gate
-│   ├── (tabs)/
-│   │   ├── _layout.tsx           # bottom tabs
-│   │   ├── index.tsx             # Dashboard
-│   │   ├── vault.tsx             # Career Vault home (category list)
-│   │   ├── requirements.tsx      # Requirements Tracker list
-│   │   ├── applications.tsx      # Application Tracker list
-│   │   └── more.tsx              # OJT Logger, Resume Builder, Settings links
-│   ├── vault/
-│   │   ├── [category]/index.tsx  # list entries in a category
-│   │   ├── [category]/form.tsx   # add/edit entry (?id= for edit)
-│   │   └── profile.tsx           # edit profile
-│   ├── resume/
-│   │   ├── index.tsx             # saved resume versions
-│   │   ├── builder.tsx           # select entries + template
-│   │   └── preview.tsx           # preview + export
-│   ├── requirements/form.tsx
-│   ├── requirements/templates.tsx
-│   ├── applications/form.tsx
-│   ├── applications/[id].tsx
-│   ├── ojt/index.tsx             # OJT overview + logs
-│   ├── ojt/log-form.tsx
-│   ├── ojt/setup.tsx             # company, required hours, dates
-│   └── settings.tsx              # app lock, data reset, about
-├── src/
-│   ├── components/               # reusable UI (Button, Card, Input, EmptyState, StatusBadge, ...)
-│   ├── constants/
-│   │   ├── theme.ts              # colors, spacing, typography, radius
-│   │   └── requirementTemplates.ts
-│   ├── db/
-│   │   ├── client.ts             # open DB, run migrations
-│   │   ├── migrations.ts         # CREATE TABLE statements, versioned
-│   │   └── repositories/         # one file per table group (vaultRepo.ts, requirementRepo.ts, ...)
-│   ├── hooks/                    # useVaultEntries, useRequirements, useReadinessScore, ...
-│   ├── services/
-│   │   ├── fileService.ts        # pick + copy + delete files
-│   │   ├── pdfService.ts         # build HTML, print to PDF, share
-│   │   ├── notificationService.ts
-│   │   └── authService.ts        # PIN + biometrics
-│   ├── templates/resume/         # HTML resume templates (atsSimple.ts, modern.ts)
-│   ├── types/                    # TypeScript types matching DB tables
-│   └── utils/                    # date helpers, validators, score calculator
-└── CLAUDE.md
+├── app.json                      # app config: name, icons, splash, plugins
+├── assets/
+│   ├── brand/careerkit-logo-original.jpg   # original logo artwork (source, not bundled)
+│   └── images/                   # careerkit-logo(-full).png, icon.png, android-icon-*.png, favicon.png
+└── src/
+    ├── app/                      # Expo Router screens (every file = a screen)
+    │   ├── _layout.tsx           # root: DB + migrations, Stack, App Lock gate, splash
+    │   ├── onboarding.tsx        # intro slides (first launch / "View intro again")
+    │   ├── (tabs)/
+    │   │   ├── _layout.tsx       # bottom tabs + header; redirects to onboarding on first launch
+    │   │   ├── index.tsx         # Dashboard (readiness score, bento tiles)
+    │   │   ├── vault.tsx         # Career Vault home (profile + category tiles)
+    │   │   ├── requirements.tsx  # Requirements list (status/category filters)
+    │   │   ├── applications.tsx  # Applications list (status filter, search)
+    │   │   └── more.tsx          # Resume Builder, OJT Logger, Settings tiles
+    │   ├── vault/
+    │   │   ├── profile.tsx
+    │   │   ├── education/{index,form}.tsx       # list + add/edit (?id= for edit)
+    │   │   ├── experience/{index,form}.tsx
+    │   │   ├── projects/{index,form}.tsx
+    │   │   ├── skills/{index,form}.tsx
+    │   │   └── certifications/{index,form}.tsx
+    │   ├── resume/{index,builder,preview}.tsx   # saved versions, builder, preview/export
+    │   ├── requirements/{form,templates}.tsx    # add/edit, Smart Templates
+    │   ├── applications/{form,[id]}.tsx         # add/edit, detail (status + resume sent)
+    │   ├── ojt/{index,setup,log-form,logs,requirement-form}.tsx
+    │   └── settings/{index,pin}.tsx             # settings, PIN set/change/disable
+    ├── components/               # shared UI (Section 8.2)
+    │   ├── Screen, Card, SectionTitle, Tile (+ BentoRow), Button, FAB, ListItem, EmptyState, LoadingView
+    │   ├── TextField, PickerField (+ DateField, TimeField), Select, FilterChips, Checkbox, FieldHint
+    │   ├── StatusBadge, ProgressBar, ProgressRing, ConfirmDialog, SourceChooser, ImageViewer
+    │   ├── EntryListScreen, EntryFormShell, FormActions        # the generic list/form pattern
+    │   ├── AttachmentPicker, ProfilePhotoPicker, ResumeSectionPicker
+    │   └── AppLogo, AppHeader, SplashOverlay, AppLockGate, LockScreen, PinPad
+    ├── constants/                # theme, dates, files, vault, requirements, requirementTemplates,
+    │                             # applications, ojt, notifications, security, onboarding
+    ├── db/
+    │   ├── client.ts             # open DB, foreign keys ON, run migrations
+    │   ├── migrations.ts         # v1 all tables, v2 applications.notification_id
+    │   └── repositories/         # ALL SQL lives here (one file per table group):
+    │       # profile, education, experience, project, skill, certification, attachment,
+    │       # resume (+ resumeItem), requirement, application, ojt (+ ojtRequirement),
+    │       # dashboard (aggregates), settings, reset, demo, dbInfo; types.ts = EntryRepo
+    ├── hooks/                    # useVaultEntries (generic list/entry), useEntryForm, useProfile,
+    │                             # useAttachments, useResumes, useRequirements, useRequirementTemplates,
+    │                             # useApplications, useOjt, useDashboard, useSettings, useOnboarding
+    ├── services/                 # native APIs: fileService, pdfService, notificationService, authService
+    ├── templates/
+    │   ├── resume/               # atsSimple.ts, modern.ts, shared.ts (HTML for the PDF)
+    │   └── dtr.ts                # OJT Daily Time Record PDF
+    ├── types/                    # one type per table + XInput types
+    └── utils/                    # pure functions: dates, validators, html, requirementStatus,
+                                  # requirementTemplates, reminders, ojtHours, ojtProgress,
+                                  # readinessScore, demoData
 ```
 
----
+**Where to find each module (for the Q&A):**
+
+| Module | Screens | Hook | Repository | Pure logic / service |
+|---|---|---|---|---|
+| Career Vault | `(tabs)/vault`, `vault/*` | `useVaultEntries`, `useProfile`, `useAttachments` | `*Repo` per category, `attachmentRepo` | `validators`, `fileService` |
+| Resume Builder | `resume/*` | `useResumes` | `resumeRepo`, `resumeItemRepo` | `templates/resume/*`, `pdfService` |
+| Requirements | `(tabs)/requirements`, `requirements/*` | `useRequirements`, `useRequirementTemplates` | `requirementRepo` | `requirementStatus`, `requirementTemplates`, `reminders`, `notificationService` |
+| Applications | `(tabs)/applications`, `applications/*` | `useApplications` | `applicationRepo` | `reminders`, `notificationService` |
+| OJT Logger | `ojt/*` | `useOjt` | `ojtRepo`, `ojtRequirementRepo` | `ojtHours`, `ojtProgress`, `templates/dtr` |
+| Dashboard | `(tabs)/index` | `useDashboard` | `dashboardRepo` | `readinessScore` |
+| App Lock / Settings | `settings/*` | `useSettings` | `resetRepo`, `demoRepo`, `settingsRepo` | `authService`, `demoData` |
 
 ## 5. Database Schema (SQLite)
 
