@@ -3,8 +3,8 @@ import { Redirect, router, Tabs, type Href } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { BrandHeaderTitle, HeaderIconButton } from '@/components/AppHeader';
-import { Colors, FontWeight, Radius, Spacing } from '@/constants/theme';
+import { HeaderIconButton } from '@/components/AppHeader';
+import { Colors, FontSize, FontWeight, Radius, Spacing } from '@/constants/theme';
 import { useOnboardingDone } from '@/hooks/useOnboarding';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
@@ -50,12 +50,12 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        // Header: logo badge + left-aligned title (MD3 top app bar), Settings shortcut on the right.
+        // Header: left-aligned title (MD3 top app bar), Settings shortcut on the right.
         headerStyle: { backgroundColor: Colors.background },
         headerTintColor: Colors.text,
+        headerTitleStyle: { fontWeight: FontWeight.semibold, fontSize: FontSize.lg },
         headerShadowVisible: false,
         headerTitleAlign: 'left',
-        headerTitle: ({ children }) => <BrandHeaderTitle title={children} />,
         headerRight: () => (
           <HeaderIconButton
             icon="settings-outline"
